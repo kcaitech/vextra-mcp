@@ -1,7 +1,10 @@
 import { WSClient as Communication, HttpCode } from "../pal";
+import { openDocument } from "./create";
 import { COMMUNICATION_URL } from "./setting";
-import { IStorage, Document } from "@kcdesign/data";
-import { openDocument } from "@kcdesign/editor"
+import { IStorage, Document, CoopRepository, Page } from "@kcdesign/data";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export interface IContext {
     get data(): Document;
@@ -46,11 +49,39 @@ export async function getStorageClass(provider: Provider): Promise<new (options:
 
 
 let storageBridge: StorageBridge;
-
-const communication = new Communication(COMMUNICATION_URL);
-
+const communication = new Communication(COMMUNICATION_URL, process.env.WS_TOKEN);
+interface _Context {
+    selection: {
+        selectedPage?: { id: string };
+        selectedShapes: Array<{ id: string }>;
+        hoveredShape?: { id: string };
+        textSelection: {
+            cursorStart?: number;
+            cursorEnd?: number;
+            cursorAtBefore?: boolean;
+        };
+        watch: (callback: (type: string) => void) => void;
+    };
+    lastRemoteCmdVersion: () => number | undefined;
+}
+class MockContext implements _Context {
+    selection = {
+        selectedPage: undefined,
+        selectedShapes: [],
+        hoveredShape: undefined,
+        textSelection: {
+            cursorStart: undefined,
+            cursorEnd: undefined,
+            cursorAtBefore: false,
+        },
+        watch: (callback: (type: string) => void) => { },
+    };
+    lastRemoteCmdVersion = () => 0;
+}
 export async function getFileContext(fileKey: string) {
+
     const ret = await communication.bind(fileKey);
+
     if (ret.code === HttpCode.StatusContentReviewFail) {
         throw new Error('文件正在审核中，请稍后再试');
     }
@@ -78,16 +109,31 @@ export async function getFileContext(fileKey: string) {
         sessionToken: docKeyData.session_token,
         bucketName: docKeyData.bucket_name,
     }
-
     const storage = new (await getStorageClass(docKeyData.provider))(storageOptions);
     const path = docInfoData.document.path;
     const versionId = docInfoData.document.version_id ?? "";
 
     storageBridge = new StorageBridge(storage);
-
     const result = await openDocument({ source: 'storage', storage: storageBridge, path, fid: "", versionId });
-    if (!result?.data) throw new Error('文件打开失败，请稍后再试');
+    if (!result) throw new Error('文件打开失败，请稍后再试'); 
 
-    return result.data;
+    const repo = new CoopRepository(result.data, result.repo)
+    repo.setNet(communication);
+    const waitCommandBack = (() => {
+        return new Promise<void>((resolve) => {
+            communication.watchCmds((cmds) => {
+                resolve();
+            })
+        });
+    })();
+    await communication.start(new MockContext());
+    await waitCommandBack
+    if (!result) throw new Error('文件打开失败，请稍后再试');
+    const pages: Page[] = [];
+    for (const pageKey of result.data.pagesMgr.keys) {
+        pages.push(result.data.pagesMgr.getSync(pageKey)!);
+    }
+    
+    return result;
 }
 

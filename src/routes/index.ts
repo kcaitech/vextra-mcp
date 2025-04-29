@@ -8,7 +8,7 @@ const router = Router();
 const v1Router = Router();
 v1Router.get('/example', exampleController);
 v1Router.get('/translate', translateController);
-v1Router.get('/files', fileContextController);
+v1Router.get('/:fileKey/:nodeId', fileContextController);
 
 router.use('/v1', v1Router);
 
