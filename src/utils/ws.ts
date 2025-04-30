@@ -1,7 +1,7 @@
 import { WSClient as Communication, HttpCode } from "../pal";
 import { openDocument } from "./create";
 import { COMMUNICATION_URL } from "./setting";
-import { IStorage, Document, CoopRepository, Page } from "@kcdesign/data";
+import { IStorage, Document, CoopRepository } from "@kcdesign/data";
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -129,11 +129,7 @@ export async function getFileContext(fileKey: string) {
     await communication.start(new MockContext());
     await waitCommandBack
     if (!result) throw new Error('文件打开失败，请稍后再试');
-    const pages: Page[] = [];
-    for (const pageKey of result.data.pagesMgr.keys) {
-        pages.push(result.data.pagesMgr.getSync(pageKey)!);
-    }
-    
+
     return result;
 }
 
