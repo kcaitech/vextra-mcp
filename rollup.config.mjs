@@ -53,8 +53,9 @@ export default [
     {
         input: 'src/server.ts',
         output: {
-            file: 'dist/server.js',
+            dir: 'dist',
             format: 'cjs',
+            entryFileNames: 'server.js'
         },
         plugins: commonPlugins,
         external
