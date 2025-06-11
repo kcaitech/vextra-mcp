@@ -9,6 +9,8 @@
  */
 
 
+export { IDocument } from './utils/document';
+export { initDataModule } from './utils/init';
+export { DocumentRemote } from './utils/document_remote';
+export { DocumentLocal } from './utils/document_local';
 
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"

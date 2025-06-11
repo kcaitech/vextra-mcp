@@ -8,7 +8,13 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { Shape } from "@kcdesign/data";
+import { SliceNode } from "./copy";
+import { convertIsLayerTrait } from "./IsLayerTrait";
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export function convertSliceNode(shape: Shape): SliceNode {
+    return {
+        ...convertIsLayerTrait(shape),
+        type: 'SLICE'
+    }
+}

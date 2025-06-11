@@ -8,7 +8,12 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+export class DataTransformHelper {
+    static transform(t: { m00: number, m01: number, m10: number, m11: number, m12: number }) {
+        return [[t.m00, t.m01, t.m11], [t.m10, t.m11, t.m12]];
+    }
 
+    static transform2root() {
 
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+    }
+}

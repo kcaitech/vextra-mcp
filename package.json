@@ -5,7 +5,8 @@
   "module": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "scripts": {
-    "start": "node ./dist/index.cjs",
+    "start": "node ./dist/server.js",
+    "dev": "tsx ./src/server.ts",
     "build": "rollup --config"
   },
   "keywords": [],
@@ -14,15 +15,15 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.797.0",
+    "@kcaitech/text2path": "^1.0.0",
     "@kcdesign/data": "file:../kcdesign-data",
     "@kcdesign/kcserver-client": "file:../kcserver/client",
-    "@kcdesign/text2path": "^0.0.1",
     "ali-oss": "^6.18.1",
     "axios": "^1.9.0",
-    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "path-to-regexp": "^8.2.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-babel": "^6.0.4",
@@ -32,6 +33,7 @@
     "@types/ali-oss": "^6.16.11",
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.2",
+    "@types/yargs": "^17.0.33",
     "rollup": "^4.40.1",
     "rollup-plugin-clear": "^2.0.7",
     "ts-node": "^10.9.2",

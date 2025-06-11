@@ -8,7 +8,14 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { SymbolShape } from "@kcdesign/data";
+import { convertFrameTraits } from "./FrameTraits";
+import { ComponentNode } from "./copy";
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export function convertComponentNode(shape: SymbolShape): ComponentNode {
+    return {
+        ...convertFrameTraits(shape),
+        type: 'COMPONENT',
+        /* ComponentPropertiesTrait */
+    }
+}

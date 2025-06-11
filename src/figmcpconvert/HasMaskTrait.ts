@@ -8,7 +8,13 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { Shape } from "@kcdesign/data";
+import { HasMaskTrait } from "./copy"
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export function convertHasMaskTrait(shape: Shape): HasMaskTrait {
+    return {
+        isMask: shape.mask,
+        maskType: shape.mask ? 'ALPHA' : undefined,
+        isMaskOutline: true
+    }
+}

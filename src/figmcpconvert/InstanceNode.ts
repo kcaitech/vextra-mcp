@@ -8,7 +8,15 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { Artboard, SymbolRefShape } from "@kcdesign/data";
+import { InstanceNode } from "./copy";
+import { convertFrameTraits } from "./FrameTraits";
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export function convertInstanceNode(shape: SymbolRefShape): InstanceNode {
+    return {
+        ...convertFrameTraits(shape as unknown as Artboard),
+        type: 'INSTANCE',
+        componentId: shape.refId,
+        overrides: []
+    }
+}

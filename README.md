@@ -1,31 +1,34 @@
 # Vextra-MCP-Server
 
 ## 项目简介
-这是一个基于 Node.js 和 TypeScript 构建的服务端项目，具备生产环境的最佳实践。
+这是一个基于 Node.js 和 TypeScript 构建的文件服务器项目，提供文件上传、转换等功能。
 
 ## 目录结构
 ```
 project-root/
 ├── src/                     # 源代码目录
-│   ├── controllers/         # 控制器层，处理业务逻辑
-│   ├── routes/              # 路由定义
-│   ├── middlewares/         # 中间件
-│   ├── models/              # 数据模型
-│   ├── services/            # 服务层，处理复杂逻辑
-│   ├── utils/               # 工具函数
-│   ├── config/              # 配置文件（如环境变量、数据库配置等）
-│   └── app.ts               # 应用入口文件
-├── tests/                   # 测试代码
-│   ├── unit/                # 单元测试
-│   └── integration/         # 集成测试
-├── public/                  # 静态资源（如图片、CSS、JS 文件等）
-├── dist/                    # 编译后的代码（TypeScript 项目）
-├── .env                     # 环境变量文件
-├── .gitignore               # Git 忽略文件
-├── package.json             # 项目依赖和脚本
-├── tsconfig.json            # TypeScript 配置
-└── README.md                # 项目说明文档
+│   ├── config/             # 配置文件
+│   ├── figmcpconvert/      # MCP 文件转换相关代码
+│   ├── middlewares/        # Express 中间件
+│   ├── utils/              # 工具函数
+│   ├── index.ts            # 库入口文件
+│   └── server.ts           # 服务器入口文件
+├── scripts/                # 脚本文件
+├── dist/                   # 编译后的代码
+├── .gitignore             # Git 忽略文件
+├── package.json           # 项目依赖和脚本
+├── rollup.config.mjs      # Rollup 打包配置
+├── tsconfig.json          # TypeScript 配置
+└── README.md              # 项目说明文档
 ```
+
+## 主要依赖
+- express: Web 服务器框架
+- @aws-sdk/client-s3: AWS S3 客户端
+- ali-oss: 阿里云 OSS 客户端
+- winston: 日志记录
+- typescript: TypeScript 支持
+- rollup: 代码打包工具
 
 ## 安装与运行
 
@@ -34,27 +37,33 @@ project-root/
 npm install
 ```
 
+### 开发模式
+```bash
+npm run dev
+```
+
+### 构建项目
+```bash
+npm run build
+```
+
 ### 启动服务
 ```bash
 npm start
 ```
 
-服务将运行在 `http://localhost:3002`。
+服务将运行在配置的端口上（默认为 3002）。
 
-## 测试
+## 开发说明
 
-### 运行单元测试
-```bash
-npm run test:unit
-```
+### 构建工具
+项目使用 Rollup 进行打包，支持以下输出格式：
+- CommonJS (cjs)
+- ES Module (esm)
 
-### 运行集成测试
-```bash
-npm run test:integration
-```
+### 类型声明
+项目使用 TypeScript 开发，会自动生成类型声明文件（.d.ts）。
 
-## 依赖
-- express
-- dotenv
-- winston
-- typescript
+### 环境要求
+- Node.js 18.0.0 或更高版本
+- npm 8.0.0 或更高版本

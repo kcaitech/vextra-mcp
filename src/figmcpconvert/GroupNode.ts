@@ -8,7 +8,13 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { Artboard } from "@kcdesign/data";
+import { convertFrameTraits } from "./FrameTraits";
+import { GroupNode } from "./copy";
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export function convertGroupNode(shape: Artboard): GroupNode {
+    return {
+        ...convertFrameTraits(shape),
+        type: 'GROUP',
+    }
+}

@@ -8,7 +8,11 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { GroupShape, Shape, ShapeType } from "@kcdesign/data";
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export function link(shape: GroupShape) {
+    shape.childs.forEach(child => {
+        (child as Shape & { __parent: Shape }).__parent = shape;
+        if (child.type === ShapeType.Group && (child as GroupShape).childs) link(child as GroupShape);
+    });
+}

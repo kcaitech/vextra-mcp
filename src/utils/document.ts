@@ -8,7 +8,9 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { GetFileResponse } from "../figmcpconvert/copy";
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export interface IDocument {
+    load(): Promise<void>;
+    getFileContext(): GetFileResponse;
+}

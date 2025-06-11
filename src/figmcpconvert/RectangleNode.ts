@@ -8,7 +8,13 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { Shape } from "@kcdesign/data";
+import { RectangleNode } from "./copy";
+import { convertDefaultShapeTraits } from "./DefaultShapeTraits";
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export function convertRectangleNode(shape: Shape): RectangleNode {
+    return  {
+        ...convertDefaultShapeTraits(shape),
+        type: 'RECTANGLE'
+    }
+}

@@ -8,7 +8,13 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { Shape } from "@kcdesign/data";
+import { LineNode } from "./copy";
+import { convertDefaultShapeTraits } from "./DefaultShapeTraits";
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export function convertLineNode(shape: Shape): LineNode {
+    return {
+        ...convertDefaultShapeTraits(shape),
+        type: 'LINE',
+    }
+}

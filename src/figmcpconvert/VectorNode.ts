@@ -8,7 +8,13 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { Shape } from "@kcdesign/data";
+import { VectorNode } from "./copy";
+import { convertCornerRadiusShapeTraits } from "./CornerRadiusShapeTraits";
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"
+export function convertVectorNode(shape: Shape): VectorNode {
+    return {
+        ...convertCornerRadiusShapeTraits(shape),
+        type: 'VECTOR'
+    }
+}

@@ -1,8 +1,18 @@
-import { IStorage } from "@kcdesign/data"
-import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3"
-import {StorageOptions} from "./ws"
+/*
+ * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
+ *
+ * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
+ * The full license text can be found in the LICENSE file in the root directory of this source tree.
+ *
+ * For more information about the AGPL-3.0 license, please visit:
+ * https://www.gnu.org/licenses/agpl-3.0.html
+ */
 
-export default class S3Storage implements IStorage {
+import { IO } from "@kcdesign/data"
+import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3"
+import {StorageOptions} from "./document_remote"
+
+export default class S3Storage implements IO.IStorage {
     private client: S3Client
     private options: StorageOptions
 

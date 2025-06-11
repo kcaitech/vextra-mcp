@@ -1,8 +1,18 @@
-import { IStorage } from "@kcdesign/data"
-import OSS from "ali-oss"
-import {StorageOptions} from "./ws"
+/*
+ * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
+ *
+ * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
+ * The full license text can be found in the LICENSE file in the root directory of this source tree.
+ *
+ * For more information about the AGPL-3.0 license, please visit:
+ * https://www.gnu.org/licenses/agpl-3.0.html
+ */
 
-export default class OssStorage implements IStorage {
+import { IO } from "@kcdesign/data"
+import OSS from "ali-oss"
+import {StorageOptions} from "./document_remote"
+
+export default class OssStorage implements IO.IStorage {
     private client: OSS
     private options: StorageOptions
 
