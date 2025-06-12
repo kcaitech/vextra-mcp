@@ -8,14 +8,11 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { SymbolShape } from "@kcdesign/data";
-import { convertFrameTraits } from "./FrameTraits";
-import { ComponentSetNode } from "./copy";
+import { Document, PageView } from "@kcdesign/data";
 
-export function convertComponentSetNode(shape: SymbolShape): ComponentSetNode {
-    return {
-        ...convertFrameTraits(shape),
-        type: 'COMPONENT_SET',
-        /* ComponentPropertiesTrait */
-    }
+
+export interface IDocument {
+    load(): Promise<void>;
+    data(): Document;
+    getPageView(pageId: string): Promise<PageView>
 }

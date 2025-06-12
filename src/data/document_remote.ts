@@ -11,9 +11,8 @@
 import { WSClient, HttpCode } from "./pal";
 import { openDocument } from "./open";
 import { WS_URL } from "../config";
-import { IO, Document, Coop } from "@kcdesign/data";
+import { IO, Document, Coop, layoutShape, DViewCtx, PageView } from "@kcdesign/data";
 import { IDocument } from "./document";
-import { convertGetFileResponse } from "src/figmcpconvert";
 
 
 export interface IContext {
@@ -92,6 +91,9 @@ export class DocumentRemote implements IDocument {
     private fileKey: string;
     private document?: Document;
     private repo?: Coop.CoopRepository;
+
+    private pageViews: Map<string, {ctx: DViewCtx, view: PageView}> = new Map();
+
     constructor(token: string, fileKey: string) {
         this.ws = new WSClient(WS_URL, token);
         this.fileKey = fileKey;
@@ -152,28 +154,24 @@ export class DocumentRemote implements IDocument {
         this.repo = result.cooprepo;
     }
 
-    public getFileContext() {
+    public data() {
         if (!this.repo) throw new Error('文件未加载');
         if (!this.document) throw new Error('文件未加载');
+        return this.document;
+    }
 
-        const doc = this.document;
-
-        const pages = doc.pagesMgr.keys.map((key) => doc.pagesMgr.getSync(key))
-
-        const data = {
-            id: doc.id,
-            name: doc.name,
-            role: 'owner',
-            lastModified: '',
-            editorType: 'figma',
-            version: '',
-            locked: false,
-            visible: true,
-            type: 'Document',
-            pages,
-        } as unknown as Document;
-
-        return (convertGetFileResponse(data));
+    public async getPageView(pageId: string): Promise<PageView> {
+        if (!this.repo) throw new Error('文件未加载');
+        if (!this.document) throw new Error('文件未加载');
+        
+        if (this.pageViews.has(pageId)) {
+            return this.pageViews.get(pageId)!.view;
+        }
+        const page = await this.document.pagesMgr.get(pageId)
+        if (!page) throw new Error('页面未找到');
+        const view = layoutShape(page);
+        this.pageViews.set(pageId, {ctx: view.ctx, view: view.view as PageView});
+        return view.view as PageView;
     }
 }
 

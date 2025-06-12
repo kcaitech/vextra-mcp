@@ -9,6 +9,4 @@
  */
 
 
-
 export const WS_URL = "ws://localhost:80/api/ws"
-export const WS_TOKEN = "1234567890"

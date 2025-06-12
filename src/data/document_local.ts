@@ -8,14 +8,15 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { convertGetFileResponse } from "../figmcpconvert";
 import { IDocument } from "./document";
 import { openDocument } from "./open";
-import { Document, Coop } from "@kcdesign/data";
+import { Document, Coop, PageView, DViewCtx, layoutShape } from "@kcdesign/data";
 export class DocumentLocal implements IDocument {
     private document?: Document;
     private repo?: Coop.CoopRepository;
     private filePath: string;
+    private pageViews: Map<string, {ctx: DViewCtx, view: PageView}> = new Map();
+
     constructor(filePath: string) {
         this.filePath = filePath;
     }
@@ -30,26 +31,23 @@ export class DocumentLocal implements IDocument {
         this.document = document.data;
         this.repo = document.cooprepo;
     }
-    public getFileContext() {
+    public data() {
         if (!this.repo) throw new Error('文件未加载');
         if (!this.document) throw new Error('文件未加载');
-        const doc = this.document;
+        return this.document;
+    }
 
-        const pages = doc.pagesMgr.keys.map((key) => doc.pagesMgr.getSync(key))
-
-        const data = {
-            id: doc.id,
-            name: doc.name,
-            role: 'owner',
-            lastModified: '',
-            editorType: 'figma',
-            version: '',
-            locked: false,
-            visible: true,
-            type: 'Document',
-            pages,
-        } as unknown as Document;
-
-        return (convertGetFileResponse(data));
+    public async getPageView(pageId: string): Promise<PageView> {
+        if (!this.repo) throw new Error('文件未加载');
+        if (!this.document) throw new Error('文件未加载');
+        
+        if (this.pageViews.has(pageId)) {
+            return this.pageViews.get(pageId)!.view;
+        }
+        const page = await this.document.pagesMgr.get(pageId)
+        if (!page) throw new Error('页面未找到');
+        const view = layoutShape(page);
+        this.pageViews.set(pageId, {ctx: view.ctx, view: view.view as PageView});
+        return view.view as PageView;
     }
 }

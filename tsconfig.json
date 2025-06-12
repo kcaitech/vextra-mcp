@@ -15,12 +15,14 @@
     "types": [
       "node"
     ],
-    "paths": {},
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "skipLibCheck": true
   }
 }
