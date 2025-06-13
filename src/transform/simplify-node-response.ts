@@ -15,6 +15,8 @@ import {
 } from "@/transform/utils";
 import { buildSimplifiedStrokes, type SimplifiedStroke } from "@/transform/style";
 import { buildSimplifiedEffects, type SimplifiedEffects } from "@/transform/effects";
+import { IDocument } from "@/data/document";
+import { ShapeView } from "@kcdesign/data";
 /**
  * TODO ITEMS
  *
@@ -127,8 +129,12 @@ export interface ColorValue {
   opacity: number;
 }
 
+export function parseVextraDocument(document: IDocument): SimplifiedDesign {
+  return parseFigmaResponse(document);
+}
+
 // ---------------------- PARSING ----------------------
-export function parseFigmaResponse(data: GetFileResponse | GetFileNodesResponse): SimplifiedDesign {
+export function parseFigmaResponse(view: ShapeView): SimplifiedDesign {
   const aggregatedComponents: Record<string, Component> = {};
   const aggregatedComponentSets: Record<string, ComponentSet> = {};
   let nodesToParse: Array<FigmaDocumentNode>;

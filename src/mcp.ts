@@ -43,11 +43,17 @@ function registerTools(
         .describe(
           "The key of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/...",
         ),
+      pageId: z
+        .string()
+        .optional()
+        .describe(
+          "The ID of the page to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/<pageId>/...",
+        ),
       nodeId: z
         .string()
         .optional()
         .describe(
-          "The ID of the node to fetch, often found as URL parameter node-id=<nodeId>, always use if provided",
+          "The ID of the node to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/<pageId>/<nodeId>/...",
         ),
       depth: z
         .number()
@@ -56,7 +62,7 @@ function registerTools(
           "OPTIONAL. Do NOT use unless explicitly requested by the user. Controls how many levels deep to traverse the node tree,",
         ),
     },
-    async ({ fileKey, nodeId, depth }) => {
+    async ({ fileKey, pageId, nodeId, depth }) => {
       try {
         Logger.log(
           `Fetching ${
@@ -65,8 +71,10 @@ function registerTools(
         );
 
         let file: SimplifiedDesign;
-        if (nodeId) {
-          file = await vextraService.getNode(fileKey, nodeId, depth);
+        if (pageId && nodeId) {
+          file = await vextraService.getNode(fileKey, pageId, nodeId, depth);
+        } else if (pageId) {
+          file = await vextraService.getNode(fileKey, pageId, pageId, depth);
         } else {
           file = await vextraService.getFile(fileKey, depth);
         }
@@ -108,6 +116,9 @@ function registerTools(
       fileKey: z.string().describe("The key of the Vextra file containing the node"),
       nodes: z
         .object({
+          pageId: z
+            .string()
+            .describe("The ID of the Vextra page to fetch, formatted as a UUID"),
           nodeId: z
             .string()
             .describe("The ID of the Vextra image node to fetch, formatted as a UUID"),
@@ -166,7 +177,8 @@ function registerTools(
         const fillDownloads = vextraService.getImageFills(fileKey, imageFills, localPath);
         const renderRequests = nodes
           .filter(({ imageRef }) => !imageRef)
-          .map(({ nodeId, fileName }) => ({
+          .map(({ pageId, nodeId, fileName }) => ({
+            pageId,
             nodeId,
             fileName,
             fileType: fileName.endsWith(".svg") ? ("svg" as const) : ("png" as const),

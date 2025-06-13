@@ -1,5 +1,5 @@
 import fs from "fs";
-import { parseFigmaResponse, SimplifiedDesign } from "@/transform/simplify-node-response";
+import { parseVextraDocument, parseFigmaResponse as parseVextraViewNode, SimplifiedDesign } from "@/transform/simplify-node-response";
 import { downloadFile, saveFile } from "@/utils/fetch-with-retry";
 import { Logger } from "@/utils/logger";
 import yaml from "js-yaml";
@@ -7,6 +7,7 @@ import { IDocument } from "./data/document";
 import { DocumentRemote } from "./data/document_remote";
 
 type FetchImageParams = {
+  pageId: string;
   /**
    * The Node in Figma that will either be rendered or have its background image downloaded
    */
@@ -21,7 +22,11 @@ type FetchImageParams = {
   fileType: "png" | "svg";
 };
 
-type FetchImageFillParams = Omit<FetchImageParams, "fileType"> & {
+type FetchImageFillParams = {
+  /**
+ * The local file name to save the image
+ */
+  fileName: string;
   /**
    * Required to grab the background image when an image is used as a fill
    */
@@ -83,61 +88,53 @@ export class VextraService {
       simplifyStroke: boolean;
     },
   ): Promise<string[]> {
-
     const document = await this.getDocument(fileKey);
-    const data = document.data();
 
+    // todo size
+    const tempCanvas = new OffscreenCanvas(1000, 1000);
+    const tempCtx = tempCanvas.getContext('2d')!;
+
+    const result: Map<string, string> = new Map();
     // 获取所有节点
+    const tasks = nodes.map(async (node) => {
+      const view = await document.getNodeView(node.nodeId, node.pageId);
+      if (!view) return;
+      if (node.fileType === 'png') {
+        view.ctx.setCanvas(tempCtx)
+        view.render('Canvas'); // render to png
+        // 转换为PNG blob
+        const blob = await tempCanvas.convertToBlob({ type: 'image/png' });
+        const buffer = await blob.arrayBuffer();
 
+        // 保存为PNG文件
+        const path = saveFile(node.fileName, localPath, Buffer.from(buffer));
+        result.set(node.nodeId, path);
+      }
+      else if (node.fileType === 'svg') {
 
-    const pngIds = nodes.filter(({ fileType }) => fileType === "png").map(({ nodeId }) => nodeId);
-    const pngFiles =
-      pngIds.length > 0
-        ? this.request<GetImagesResponse>(
-            `/images/${fileKey}?ids=${pngIds.join(",")}&format=png&scale=${pngScale}`,
-          ).then(({ images = {} }) => images)
-        : ({} as GetImagesResponse["images"]);
+        const svg = view.toSVGString();
+        const path = saveFile(node.fileName, localPath, Buffer.from(svg));
+        result.set(node.nodeId, path);
+      }
+    });
 
-    const svgIds = nodes.filter(({ fileType }) => fileType === "svg").map(({ nodeId }) => nodeId);
-    const svgParams = [
-      `ids=${svgIds.join(",")}`,
-      "format=svg",
-      `svg_outline_text=${svgOptions.outlineText}`,
-      `svg_include_id=${svgOptions.includeId}`,
-      `svg_simplify_stroke=${svgOptions.simplifyStroke}`,
-    ].join("&");
+    await Promise.all(tasks);
 
-    const svgFiles =
-      svgIds.length > 0
-        ? this.request<GetImagesResponse>(`/images/${fileKey}?${svgParams}`).then(
-            ({ images = {} }) => images,
-          )
-        : ({} as GetImagesResponse["images"]);
+    const downloads = nodes.map(({ nodeId }) => {
+        return result.get(nodeId);
+      });
 
-    const files = await Promise.all([pngFiles, svgFiles]).then(([f, l]) => ({ ...f, ...l }));
-
-    const downloads = nodes
-      .map(({ nodeId, fileName }) => {
-        const imageUrl = files[nodeId];
-        if (imageUrl) {
-          return downloadFile(fileName, localPath, imageUrl);
-        }
-        return false;
-      })
-      .filter((url) => !!url);
-
-    return Promise.all(downloads);
+    return downloads.filter((url) => !!url) as string[];
   }
 
   // 获取整个文件
   async getFile(fileKey: string, depth?: number | null): Promise<SimplifiedDesign> {
     try {
-      const endpoint = `/files/${fileKey}${depth ? `?depth=${depth}` : ""}`;
-      Logger.log(`Retrieving Figma file: ${fileKey} (depth: ${depth ?? "default"})`);
-      const response = await this.request<GetFileResponse>(endpoint);
-      Logger.log("Got response");
-      const simplifiedResponse = parseFigmaResponse(response);
-      writeLogs("figma-raw.yml", response);
+      const document = await this.getDocument(fileKey);
+      if (!document) {
+        throw new Error("Failed to get document");
+      }
+      const simplifiedResponse = parseVextraDocument(document);
       writeLogs("figma-simplified.yml", simplifiedResponse);
       return simplifiedResponse;
     } catch (e) {
@@ -147,12 +144,17 @@ export class VextraService {
   }
 
   // 获取单个节点
-  async getNode(fileKey: string, nodeId: string, depth?: number | null): Promise<SimplifiedDesign> {
-    const endpoint = `/files/${fileKey}/nodes?ids=${nodeId}${depth ? `&depth=${depth}` : ""}`;
-    const response = await this.request<GetFileNodesResponse>(endpoint);
-    Logger.log("Got response from getNode, now parsing.");
-    writeLogs("figma-raw.yml", response);
-    const simplifiedResponse = parseFigmaResponse(response);
+  async getNode(fileKey: string, pageId: string, nodeId: string, depth?: number | null): Promise<SimplifiedDesign> {
+    const document = await this.getDocument(fileKey);
+      if (!document) {
+        throw new Error("Failed to get document");
+      }
+    const view = await document.getNodeView(nodeId, pageId);
+    if (!view) {
+      throw new Error("Failed to get node view");
+    }
+
+    const simplifiedResponse = parseVextraViewNode(view);
     writeLogs("figma-simplified.yml", simplifiedResponse);
     return simplifiedResponse;
   }

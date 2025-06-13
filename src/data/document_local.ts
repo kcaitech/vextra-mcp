@@ -10,7 +10,7 @@
 
 import { IDocument } from "./document";
 import { openDocument } from "./open";
-import { Document, Coop, PageView, DViewCtx, layoutShape } from "@kcdesign/data";
+import { Document, Coop, PageView, DViewCtx, layoutShape, ShapeView } from "@kcdesign/data";
 export class DocumentLocal implements IDocument {
     private document?: Document;
     private repo?: Coop.CoopRepository;
@@ -49,5 +49,12 @@ export class DocumentLocal implements IDocument {
         const view = layoutShape(page);
         this.pageViews.set(pageId, {ctx: view.ctx, view: view.view as PageView});
         return view.view as PageView;
+    }
+
+    public async getNodeView(nodeId: string, pageId: string): Promise<ShapeView | undefined> {
+        if (!this.repo) throw new Error('文件未加载');
+        if (!this.document) throw new Error('文件未加载');
+        const pageView = await this.getPageView(pageId);
+        return pageView?.getView(nodeId)
     }
 }

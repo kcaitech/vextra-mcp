@@ -11,7 +11,7 @@
 import { WSClient, HttpCode } from "./pal";
 import { openDocument } from "./open";
 import { WS_URL } from "../config";
-import { IO, Document, Coop, layoutShape, DViewCtx, PageView } from "@kcdesign/data";
+import { IO, Document, Coop, layoutShape, DViewCtx, PageView, ShapeView } from "@kcdesign/data";
 import { IDocument } from "./document";
 
 
@@ -160,7 +160,7 @@ export class DocumentRemote implements IDocument {
         return this.document;
     }
 
-    public async getPageView(pageId: string): Promise<PageView> {
+    public async getPageView(pageId: string): Promise<PageView | undefined> {
         if (!this.repo) throw new Error('文件未加载');
         if (!this.document) throw new Error('文件未加载');
         
@@ -168,10 +168,17 @@ export class DocumentRemote implements IDocument {
             return this.pageViews.get(pageId)!.view;
         }
         const page = await this.document.pagesMgr.get(pageId)
-        if (!page) throw new Error('页面未找到');
+        if (!page) return;
         const view = layoutShape(page);
         this.pageViews.set(pageId, {ctx: view.ctx, view: view.view as PageView});
         return view.view as PageView;
+    }
+
+    public async getNodeView(nodeId: string, pageId: string): Promise<ShapeView | undefined> {
+        if (!this.repo) throw new Error('文件未加载');
+        if (!this.document) throw new Error('文件未加载');
+        const pageView = await this.getPageView(pageId);
+        return pageView?.getView(nodeId)
     }
 }
 
