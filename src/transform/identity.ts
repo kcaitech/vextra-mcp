@@ -1,6 +1,6 @@
 
 import { isTruthy } from "remeda";
-import type { CSSHexColor, CSSRGBAColor } from "@/transform/simplify-node-response";
+import type { CSSHexColor, CSSRGBAColor } from "./types";
 
 export { isTruthy };
 

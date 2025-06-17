@@ -1,5 +1,5 @@
 import fs from "fs";
-import { parseVextraDocument, parseFigmaResponse as parseVextraViewNode, SimplifiedDesign } from "@/transform/simplify-node-response";
+import { parseVextraDocument, parseVextraViewNode, SimplifiedDesign } from "@/transform/simplify-node-response";
 import { downloadFile, saveFile } from "@/utils/fetch-with-retry";
 import { Logger } from "@/utils/logger";
 import yaml from "js-yaml";

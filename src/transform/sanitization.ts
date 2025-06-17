@@ -1,17 +1,5 @@
+import { SimplifiedComponentDefinition, SimplifiedComponentSetDefinition } from "./types";
 
-export interface SimplifiedComponentDefinition {
-  id: string;
-  key: string;
-  name: string;
-  componentSetId?: string;
-}
-
-export interface SimplifiedComponentSetDefinition {
-  id: string;
-  key: string;
-  name: string;
-  description?: string;
-}
 
 export function sanitizeComponents(
   aggregatedComponents: Record<string, Component>,

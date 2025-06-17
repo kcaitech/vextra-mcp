@@ -8,8 +8,9 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { Coop, IO, TransactDataGuard, Document, DocEditor, createDocument } from "@kcdesign/data";
+import { IO, TransactDataGuard, Document, DocEditor, creator } from "@kcdesign/data";
 import { initDataModule } from "./init";
+import { CoopRepository } from "@kcdesign/coop";
 
 export type DocumentProps = (
     { source: 'storage', storage: IO.IStorage, path: string, fid: string, versionId: string } |
@@ -20,31 +21,31 @@ async function _open(props: DocumentProps) {
     await initDataModule();
 
     const repo = new TransactDataGuard();
-    let cooprepo: Coop.CoopRepository | undefined;
+    let cooprepo: CoopRepository | undefined;
     let data: Document | undefined;
     if (props.source === 'storage') {
         const { document } = await IO.importRemote(props.storage, props.path, props.fid, props.versionId, repo);
         data = document
-        cooprepo = new Coop.CoopRepository(data, repo)
+        cooprepo = new CoopRepository(data, repo)
     } else if (props.source === 'file') {
         if (props.fmt === 'sketch') {
             data = await IO.importSketch(props.file, repo);
-            cooprepo = new Coop.CoopRepository(data, repo)
+            cooprepo = new CoopRepository(data, repo)
         } else if (props.fmt === 'fig') {
             data = await IO.importFigma(props.file, repo)
-            cooprepo = new Coop.CoopRepository(data, repo)
+            cooprepo = new CoopRepository(data, repo)
         } else if (props.fmt === 'vext' || props.fmt === 'moss') {
             data = await IO.importVext(props.file, repo);
-            cooprepo = new Coop.CoopRepository(data, repo)
+            cooprepo = new CoopRepository(data, repo)
         }
     } else if (props.source === 'new') {
-        data = createDocument('New Document', repo);
-        cooprepo = new Coop.CoopRepository(data, repo)
-        cooprepo.setInitingDocument(true);
+        data = creator.newDocument('New Document', repo);
+        cooprepo = new CoopRepository(data, repo)
+        cooprepo.startInitData();
         const editor = new DocEditor(data, cooprepo);
         const page = editor.create('Page 1');
         editor.insert(0, page);
-        cooprepo.setInitingDocument(false);
+        cooprepo.endInitData();
     }
 
     // todo 移动到data

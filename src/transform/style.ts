@@ -1,12 +1,8 @@
-import type { SimplifiedFill } from "@/transform/simplify-node-response";
+
 import { generateCSSShorthand, isVisible, parsePaint } from "@/transform/utils";
 import { hasValue, isStrokeWeights } from "@/transform/identity";
-export type SimplifiedStroke = {
-  colors: SimplifiedFill[];
-  strokeWeight?: string;
-  strokeDashes?: number[];
-  strokeWeights?: string;
-};
+import { SimplifiedStroke } from "./types";
+
 export function buildSimplifiedStrokes(n: FigmaDocumentNode): SimplifiedStroke {
   let strokes: SimplifiedStroke = { colors: [] };
   if (hasValue("strokes", n) && Array.isArray(n.strokes) && n.strokes.length) {

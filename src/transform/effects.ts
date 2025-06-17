@@ -1,13 +1,7 @@
 
+import { SimplifiedEffects } from "./types";
 import { formatRGBAColor } from "./utils";
 import { hasValue } from "@/transform/identity";
-
-export type SimplifiedEffects = {
-  boxShadow?: string;
-  filter?: string;
-  backdropFilter?: string;
-  textShadow?: string;
-};
 
 export function buildSimplifiedEffects(n: FigmaDocumentNode): SimplifiedEffects {
   if (!hasValue("effects", n)) return {};

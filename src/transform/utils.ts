@@ -1,17 +1,7 @@
 
-import type {
-  CSSHexColor,
-  CSSRGBAColor,
-  SimplifiedFill,
-} from "@/transform/simplify-node-response";
-import { Color } from "@kcdesign/data";
 
-export type StyleId = `${string}_${string}` & { __brand: "StyleId" };
-
-export interface ColorValue {
-  hex: CSSHexColor;
-  opacity: number;
-}
+import { Color, Fill, FillType, GradientType } from "@kcdesign/data";
+import { ColorValue, CSSHexColor, CSSRGBAColor, SimplifiedFill, StyleId, Vector } from "./types";
 
 /**
  * Remove keys with empty arrays or empty objects from an object.
@@ -189,42 +179,66 @@ export function generateCSSShorthand(
   return `${top}${suffix} ${right}${suffix} ${bottom}${suffix} ${left}${suffix}`;
 }
 
+function convertGradientType(type: GradientType): 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' {
+  switch (type) {
+    case GradientType.Linear:
+      return "GRADIENT_LINEAR";
+    case GradientType.Radial:
+      return "GRADIENT_RADIAL";
+    case GradientType.Angular:
+      return "GRADIENT_ANGULAR";
+    default:
+      return "GRADIENT_LINEAR";
+  }
+}
+
+function convertGradientHandlePositions(fill: Fill): Vector[] {
+  // const form = 
+  // return { x: from.x, y: from.y };
+  const form = fill.gradient?.from;
+  const to = fill.gradient?.to;
+  const result: Vector[] = [];
+  if (form) {
+    result.push({ x: form.x, y: form.y });
+  }
+  if (to) {
+    result.push({ x: to.x, y: to.y });
+  }
+  return result;
+}
+
 /**
  * Convert a Figma paint (solid, image, gradient) to a SimplifiedFill
  * @param raw - The Figma paint to convert
  * @returns The converted SimplifiedFill
  */
-export function parsePaint(raw: Paint): SimplifiedFill {
-  if (raw.type === "IMAGE") {
+export function parsePaint(raw: Fill): SimplifiedFill {
+  if (raw.fillType === FillType.Pattern) {
     return {
       type: "IMAGE",
       imageRef: raw.imageRef,
-      scaleMode: raw.scaleMode,
+      scaleMode: raw.imageScaleMode,
     };
-  } else if (raw.type === "SOLID") {
+  } else if (raw.fillType === FillType.SolidColor) {
     // treat as SOLID
-    const { hex, opacity } = convertColor(raw.color!, raw.opacity);
+    const { hex, opacity } = convertColor(raw.color);
     if (opacity === 1) {
       return hex;
     } else {
-      return formatRGBAColor(raw.color!, opacity);
+      return formatRGBAColor(raw.color, opacity);
     }
-  } else if (
-    ["GRADIENT_LINEAR", "GRADIENT_RADIAL", "GRADIENT_ANGULAR", "GRADIENT_DIAMOND"].includes(
-      raw.type,
-    )
-  ) {
+  } else if (raw.fillType === FillType.Gradient) {
     // treat as GRADIENT_LINEAR
     return {
-      type: raw.type,
-      gradientHandlePositions: raw.gradientHandlePositions,
-      gradientStops: raw.gradientStops.map(({ position, color }) => ({
+      type: convertGradientType(raw.gradient?.gradientType ?? GradientType.Linear),
+      gradientHandlePositions: convertGradientHandlePositions(raw),
+      gradientStops: raw.gradient?.stops.map(({ position, color }) => ({
         position,
-        color: convertColor(color),
+        color: convertColor(color as Color),
       })),
     };
   } else {
-    throw new Error(`Unknown paint type: ${raw.type}`);
+    throw new Error(`Unknown paint type: ${raw.fillType}`);
   }
 }
 

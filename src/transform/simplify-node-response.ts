@@ -1,22 +1,18 @@
-import { type SimplifiedLayout, buildSimplifiedLayout } from "@/transform/layout";
+import { buildSimplifiedLayout } from "@/transform/layout";
 
-import type {
-  SimplifiedComponentDefinition,
-  SimplifiedComponentSetDefinition,
-} from "@/transform/sanitization";
 import { sanitizeComponents, sanitizeComponentSets } from "@/transform/sanitization";
 import { hasValue, isRectangleCornerRadii, isTruthy } from "@/transform/identity";
 import {
   removeEmptyKeys,
   generateVarId,
-  type StyleId,
   parsePaint,
   isVisible,
 } from "@/transform/utils";
-import { buildSimplifiedStrokes, type SimplifiedStroke } from "@/transform/style";
-import { buildSimplifiedEffects, type SimplifiedEffects } from "@/transform/effects";
+import { buildSimplifiedStrokes } from "@/transform/style";
+import { buildSimplifiedEffects } from "@/transform/effects";
 import { IDocument } from "@/data/document";
-import { ShapeView } from "@kcdesign/data";
+import { PageView, ShapeView } from "@kcdesign/data";
+import { SimplifiedDesign } from "./types";
 /**
  * TODO ITEMS
  *
@@ -29,112 +25,26 @@ import { ShapeView } from "@kcdesign/data";
 
 // -------------------- SIMPLIFIED STRUCTURES --------------------
 
-export type TextStyle = Partial<{
-  fontFamily: string;
-  fontWeight: number;
-  fontSize: number;
-  lineHeight: string;
-  letterSpacing: string;
-  textCase: string;
-  textAlignHorizontal: string;
-  textAlignVertical: string;
-}>;
-export type StrokeWeights = {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
-};
-type StyleTypes =
-  | TextStyle
-  | SimplifiedFill[]
-  | SimplifiedLayout
-  | SimplifiedStroke
-  | SimplifiedEffects
-  | string;
-type GlobalVars = {
-  styles: Record<StyleId, StyleTypes>;
-};
+export async function parseVextraDocument(document: IDocument): SimplifiedDesign {
+  // 组装document
+  const pagesList = document.data().pagesList.map((pageItem) => {
+    const view = document.getPageView(pageItem.id)
+    return view
+  })
 
-export interface SimplifiedDesign {
-  name: string;
-  lastModified: string;
-  thumbnailUrl: string;
-  nodes: SimplifiedNode[];
-  components: Record<string, SimplifiedComponentDefinition>;
-  componentSets: Record<string, SimplifiedComponentSetDefinition>;
-  globalVars: GlobalVars;
-}
+  const views = await Promise.all(pagesList)
+  const pages = views.filter((view) => !!view) as PageView[]
 
-export interface ComponentProperties {
-  name: string;
-  value: string;
-  type: ComponentPropertyType;
-}
+  const result: SimplifiedDesign = {
+    ...document.data(),
+    pages: pages.map((page) => parseVextraViewNode(page)),
+  }
 
-export interface SimplifiedNode {
-  id: string;
-  name: string;
-  type: string; // e.g. FRAME, TEXT, INSTANCE, RECTANGLE, etc.
-  // geometry
-  boundingBox?: BoundingBox;
-  // text
-  text?: string;
-  textStyle?: string;
-  // appearance
-  fills?: string;
-  styles?: string;
-  strokes?: string;
-  effects?: string;
-  opacity?: number;
-  borderRadius?: string;
-  // layout & alignment
-  layout?: string;
-  // backgroundColor?: ColorValue; // Deprecated by Figma API
-  // for rect-specific strokes, etc.
-  componentId?: string;
-  componentProperties?: ComponentProperties[];
-  // children
-  children?: SimplifiedNode[];
-}
-
-export interface BoundingBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-export type CSSRGBAColor = `rgba(${number}, ${number}, ${number}, ${number})`;
-export type CSSHexColor = `#${string}`;
-export type SimplifiedFill =
-  | {
-      type?: Paint["type"];
-      hex?: string;
-      rgba?: string;
-      opacity?: number;
-      imageRef?: string;
-      scaleMode?: string;
-      gradientHandlePositions?: Vector[];
-      gradientStops?: {
-        position: number;
-        color: ColorValue | string;
-      }[];
-    }
-  | CSSRGBAColor
-  | CSSHexColor;
-
-export interface ColorValue {
-  hex: string;
-  opacity: number;
-}
-
-export function parseVextraDocument(document: IDocument): SimplifiedDesign {
-  return parseFigmaResponse(document);
+  return result
 }
 
 // ---------------------- PARSING ----------------------
-export function parseFigmaResponse(view: ShapeView): SimplifiedDesign {
+export function parseVextraViewNode(view: ShapeView): SimplifiedDesign {
   const aggregatedComponents: Record<string, Component> = {};
   const aggregatedComponentSets: Record<string, ComponentSet> = {};
   let nodesToParse: Array<FigmaDocumentNode>;

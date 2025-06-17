@@ -11,8 +11,9 @@
 import { WSClient, HttpCode } from "./pal";
 import { openDocument } from "./open";
 import { WS_URL } from "../config";
-import { IO, Document, Coop, layoutShape, DViewCtx, PageView, ShapeView } from "@kcdesign/data";
+import { IO, Document, layoutShape, DViewCtx, PageView, ShapeView } from "@kcdesign/data";
 import { IDocument } from "./document";
+import { CoopRepository } from "@kcdesign/coop";
 
 
 export interface IContext {
@@ -90,7 +91,7 @@ export class DocumentRemote implements IDocument {
     private ws: WSClient;
     private fileKey: string;
     private document?: Document;
-    private repo?: Coop.CoopRepository;
+    private repo?: CoopRepository;
 
     private pageViews: Map<string, {ctx: DViewCtx, view: PageView}> = new Map();
 

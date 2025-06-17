@@ -10,10 +10,11 @@
 
 import { IDocument } from "./document";
 import { openDocument } from "./open";
-import { Document, Coop, PageView, DViewCtx, layoutShape, ShapeView } from "@kcdesign/data";
+import { Document, PageView, DViewCtx, layoutShape, ShapeView } from "@kcdesign/data";
+import { CoopRepository } from "@kcdesign/coop";
 export class DocumentLocal implements IDocument {
     private document?: Document;
-    private repo?: Coop.CoopRepository;
+    private repo?: CoopRepository;
     private filePath: string;
     private pageViews: Map<string, {ctx: DViewCtx, view: PageView}> = new Map();
 

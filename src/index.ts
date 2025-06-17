@@ -9,8 +9,8 @@
  */
 
 
-export { IDocument } from './utils/document';
-export { initDataModule } from './utils/init';
-export { DocumentRemote } from './utils/document_remote';
-export { DocumentLocal } from './utils/document_local';
+export { IDocument } from './data/document';
+export { initDataModule } from './data/init';
+export { DocumentRemote } from './data/document_remote';
+export { DocumentLocal } from './data/document_local';
 
