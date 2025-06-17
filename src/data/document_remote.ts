@@ -11,9 +11,8 @@
 import { WSClient, HttpCode } from "./pal";
 import { openDocument } from "./open";
 import { WS_URL } from "../config";
-import { IO, Document, layoutShape, DViewCtx, PageView, ShapeView } from "@kcdesign/data";
+import { IO, Document, layoutShape, DViewCtx, PageView, ShapeView, Repo } from "@kcdesign/data";
 import { IDocument } from "./document";
-import { CoopRepository } from "@kcdesign/coop";
 
 
 export interface IContext {
@@ -91,7 +90,7 @@ export class DocumentRemote implements IDocument {
     private ws: WSClient;
     private fileKey: string;
     private document?: Document;
-    private repo?: CoopRepository;
+    private repo?: Repo.IRepository;
 
     private pageViews: Map<string, {ctx: DViewCtx, view: PageView}> = new Map();
 
@@ -139,7 +138,7 @@ export class DocumentRemote implements IDocument {
         if (!result) throw new Error('文件打开失败，请稍后再试');
 
         const repo = result.cooprepo
-        repo.setNet(this.ws);
+
         const waitCommandBack = (() => {
             return new Promise<void>((resolve) => {
                 this.ws.watchCmds((cmds) => {

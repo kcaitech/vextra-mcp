@@ -8,48 +8,44 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { IO, TransactDataGuard, Document, DocEditor, creator } from "@kcdesign/data";
-import { initDataModule } from "./init";
-import { CoopRepository } from "@kcdesign/coop";
+import { IO, TransactDataGuard, Document, DocEditor, creator, Repo } from "@kcdesign/data";
+import { getRepoCreator, initDataModule } from "./init";
 
 export type DocumentProps = (
     { source: 'storage', storage: IO.IStorage, path: string, fid: string, versionId: string } |
     { source: 'file', file: File, fmt: 'vext' | 'sketch' | 'fig' | 'moss' } |
     { source: 'new' })
 
-async function _open(props: DocumentProps) {
+async function _open(props: DocumentProps, repoCreator: (data: Document, guard: TransactDataGuard) => Repo.IRepository) {
     await initDataModule();
 
     const repo = new TransactDataGuard();
-    let cooprepo: CoopRepository | undefined;
+    let cooprepo: Repo.IRepository | undefined;
     let data: Document | undefined;
     if (props.source === 'storage') {
         const { document } = await IO.importRemote(props.storage, props.path, props.fid, props.versionId, repo);
         data = document
-        cooprepo = new CoopRepository(data, repo)
+        cooprepo = repoCreator(data, repo)
     } else if (props.source === 'file') {
         if (props.fmt === 'sketch') {
             data = await IO.importSketch(props.file, repo);
-            cooprepo = new CoopRepository(data, repo)
+            cooprepo = repoCreator(data, repo)
         } else if (props.fmt === 'fig') {
             data = await IO.importFigma(props.file, repo)
-            cooprepo = new CoopRepository(data, repo)
+            cooprepo = repoCreator(data, repo)
         } else if (props.fmt === 'vext' || props.fmt === 'moss') {
             data = await IO.importVext(props.file, repo);
-            cooprepo = new CoopRepository(data, repo)
+            cooprepo = repoCreator(data, repo)
         }
     } else if (props.source === 'new') {
         data = creator.newDocument('New Document', repo);
-        cooprepo = new CoopRepository(data, repo)
+        cooprepo = repoCreator(data, repo)
         cooprepo.startInitData();
         const editor = new DocEditor(data, cooprepo);
         const page = editor.create('Page 1');
         editor.insert(0, page);
         cooprepo.endInitData();
     }
-
-    // todo 移动到data
-    if (cooprepo) cooprepo.setBaseVer((data!.lastCmdVer))
 
     if (data) {
         return { data, cooprepo: cooprepo! }
@@ -62,5 +58,5 @@ async function _open(props: DocumentProps) {
  * @returns 
  */
 export async function openDocument(props: DocumentProps) {
-    return await _open(props);
+    return await _open(props, getRepoCreator());
 }

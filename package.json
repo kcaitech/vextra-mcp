@@ -17,7 +17,6 @@
     "@aws-sdk/client-s3": "^3.797.0",
     "@kcaitech/text2path": "^1.0.0",
     "@kcdesign/data": "file:../kcdesign-data",
-    "@kcdesign/coop": "file:../kcdesign-coop",
     "@kcdesign/kcserver-client": "file:../kcserver/client",
     "@modelcontextprotocol/sdk": "^1.12.1",
     "ali-oss": "^6.18.1",
