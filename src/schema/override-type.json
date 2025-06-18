@@ -1,0 +1,32 @@
+{
+    "description": "override types",
+    "enum": [
+        "name",
+        "text",
+        "image",
+        "fills",
+        "borders",
+        "shadows",
+        "visible",
+        "lock",
+        "variable",
+        "symbolID",
+        "contextSettings",
+        "tableCell",
+        "startMarkerType",
+        "endMarkerType",
+        "exportOptions",
+        "cornerRadius",
+        "blur",
+        "protoInteractions",
+        "autoLayout",
+        "frameMaskDisabled",
+        "fillsMask",
+        "borderFillsMask",
+        "bordersMask",
+        "shadowsMask",
+        "blursMask",
+        "radiusMask",
+        "textMask"
+    ]
+}

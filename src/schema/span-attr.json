@@ -1,0 +1,53 @@
+{
+    "description": "span attr",
+    "type": "object",
+    "properties": {
+        "fontName": {
+            "type": "string"
+        },
+        "fontSize": {
+            "type": "number"
+        },
+        "color": {
+            "$ref": "./color.json"
+        },
+        "strikethrough": {
+            "$ref": "./strikethrough-type.json"
+        },
+        "underline": {
+            "$ref": "./underline-type.json"
+        },
+        "weight": {
+            "type": "number"
+        },
+        "italic": {
+            "type": "boolean"
+        },
+        "bulletNumbers": {
+            "$ref": "./bullet-numbers.json"
+        },
+        "highlight": {
+            "$ref": "./color.json"
+        },
+        "kerning": {
+            "type": "number"
+        },
+        "transform": {
+            "$ref": "./text-transform-type.json"
+        },
+        "placeholder": {
+            "type": "boolean"
+        },
+        "fillType": {
+            "$ref": "./fill-type.json"
+        },
+        "gradient": {
+            "$ref": "./gradient.json"
+        },
+        "textMask": {
+            "type": "string"
+        }
+    },
+    "required": [],
+    "additionalProperties": false
+}

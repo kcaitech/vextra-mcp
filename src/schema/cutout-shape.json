@@ -1,0 +1,12 @@
+{
+    "description": "cutout shape",
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "allOf": [
+        {
+            "$ref": "./path-shape.json"
+        }
+    ],
+    "additionalProperties": false
+}

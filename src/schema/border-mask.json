@@ -1,0 +1,32 @@
+{
+    "description": "border mask",
+    "type": "object",
+    "properties": {
+        "sheet": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "border": {
+            "$ref": "./border-mask-type.json"
+        },
+        "disabled": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "sheet",
+        "id",
+        "name",
+        "description",
+        "border"
+    ],
+    "additionalProperties": false
+}

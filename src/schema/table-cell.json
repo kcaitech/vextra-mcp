@@ -1,0 +1,34 @@
+{
+    "description": "table cell",
+    "type": "object",
+    "properties": {
+        "cellType": {
+            "$ref": "./table-cell-type.json"
+        },
+        "text": {
+            "$ref": "./text.json"
+        },
+        "imageRef": {
+            "type": "string",
+            "default": "$uuid"
+        },
+        "rowSpan": {
+            "type": "number",
+            "default": 1
+        },
+        "colSpan": {
+            "type": "number",
+            "default": 1
+        }
+    },
+    "required": [
+        "cellType",
+        "text"
+    ],
+    "allOf": [
+        {
+            "$ref": "./shape.json"
+        }
+    ],
+    "additionalProperties": false
+}

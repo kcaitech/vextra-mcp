@@ -1,0 +1,21 @@
+{
+    "description": "user infomation",
+    "type": "object",
+    "properties": {
+        "userId": {
+            "type": "string"
+        },
+        "userNickname": {
+            "type": "string"
+        },
+        "avatar": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "userId",
+        "userNickname",
+        "avatar"
+    ],
+    "additionalProperties": false
+}

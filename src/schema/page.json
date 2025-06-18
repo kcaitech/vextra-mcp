@@ -1,0 +1,28 @@
+{
+    "description": "page",
+    "type": "object",
+    "properties": {
+        "backgroundColor": {
+            "$ref": "./color.json"
+        },
+        "guides": {
+            "type": "array",
+            "items": {
+                "$ref": "./guide.json"
+            }
+        },
+        "connections": {
+            "type": "array",
+            "items": {
+                "$ref": "./connection.json"
+            }
+        }
+    },
+    "required": [],
+    "allOf": [
+        {
+            "$ref": "./group-shape.json"
+        }
+    ],
+    "additionalProperties": false
+}

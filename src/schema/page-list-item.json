@@ -1,0 +1,20 @@
+{
+    "description": "page list item",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "versionId": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "name"
+    ],
+    "additionalProperties": false
+}

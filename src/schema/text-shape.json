@@ -1,0 +1,25 @@
+{
+    "description": "text shape",
+    "type": "object",
+    "properties": {
+        "size": {
+            "$ref": "./shape-size.json"
+        },
+        "text": {
+            "$ref": "./text.json"
+        },
+        "fixedRadius": {
+            "type": "number"
+        }
+    },
+    "required": [
+        "size",
+        "text"
+    ],
+    "allOf": [
+        {
+            "$ref": "./shape.json"
+        }
+    ],
+    "additionalProperties": false
+}

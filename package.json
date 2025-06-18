@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node ./dist/server.js",
     "dev": "tsx ./src/server.ts",
-    "build": "rollup --config"
+    "build": "rollup --config",
+    "schema": "tsx src/schema/script"
   },
   "keywords": [],
   "author": "",

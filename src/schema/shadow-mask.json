@@ -1,0 +1,35 @@
+{
+    "description": "shadow mask",
+    "type": "object",
+    "properties": {
+        "sheet": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "shadows": {
+            "type": "array",
+            "items": {
+                "$ref": "./shadow.json"
+            }
+        },
+        "disabled": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "sheet",
+        "id",
+        "name",
+        "description",
+        "shadows"
+    ],
+    "additionalProperties": false
+}

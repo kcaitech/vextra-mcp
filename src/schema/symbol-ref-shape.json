@@ -1,0 +1,53 @@
+{
+    "description": "symbol ref shape",
+    "type": "object",
+    "properties": {
+        "size": {
+            "$ref": "./shape-size.json"
+        },
+        "refId": {
+            "type": "string"
+        },
+        "overrides": {
+            "type": "map",
+            "key": {
+                "type": "string"
+            },
+            "value": {
+                "type": "string"
+            }
+        },
+        "variables": {
+            "type": "map",
+            "key": {
+                "type": "string"
+            },
+            "value": {
+                "$ref": "./variable.json"
+            }
+        },
+        "isCustomSize": {
+            "type": "boolean"
+        },
+        "cornerRadius": {
+            "$ref": "./corner-radius.json"
+        },
+        "innerEnvScale": {
+            "type": "number"
+        },
+        "uniformScale": {
+            "type": "number"
+        }
+    },
+    "required": [
+        "size",
+        "refId",
+        "variables"
+    ],
+    "allOf": [
+        {
+            "$ref": "./shape.json"
+        }
+    ],
+    "additionalProperties": false
+}

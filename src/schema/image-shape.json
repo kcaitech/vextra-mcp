@@ -1,0 +1,18 @@
+{
+    "description": "image shape",
+    "type": "object",
+    "properties": {
+        "imageRef": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "imageRef"
+    ],
+    "allOf": [
+        {
+            "$ref": "./path-shape.json"
+        }
+    ],
+    "additionalProperties": false
+}

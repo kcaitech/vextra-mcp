@@ -1,0 +1,24 @@
+{
+    "description": "path segment",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "points": {
+            "type": "array",
+            "items": {
+                "$ref": "./curve-point.json"
+            }
+        },
+        "isClosed": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "id",
+        "points",
+        "isClosed"
+    ],
+    "additionalProperties": false
+}

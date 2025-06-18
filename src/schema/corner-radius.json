@@ -1,0 +1,33 @@
+{
+    "description": "couner radius",
+    "type": "object",
+    "properties": {
+        "id":{
+            "type": "string"
+        },
+        "lt": {
+            "type": "integer",
+            "default": 0
+        },
+        "rt": {
+            "type": "integer",
+            "default": 0
+        },
+        "lb": {
+            "type": "integer",
+            "default": 0
+        },
+        "rb": {
+            "type": "integer",
+            "default": 0
+        }
+    },
+    "required": [
+        "id",
+        "lt",
+        "rt",
+        "lb",
+        "rb"
+    ],
+    "additionalProperties": false
+}

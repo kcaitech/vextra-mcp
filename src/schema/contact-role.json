@@ -1,0 +1,21 @@
+{
+    "description": "contactstyle",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "roleType": {
+            "$ref": "./contact-role-type.json"
+        },
+        "shapeId": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "roleType",
+        "shapeId"
+    ],
+    "additionalProperties": false
+}

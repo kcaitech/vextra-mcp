@@ -1,0 +1,22 @@
+{
+    "description": "prototypeInteraction",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "event": {
+            "$ref": "./prototype-event.json"
+        },
+        "actions": {
+            "$ref": "./prototype-actions.json"
+        },
+        "isDeleted": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "event",
+        "actions"
+    ]
+}

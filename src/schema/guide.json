@@ -1,0 +1,22 @@
+{
+  "description": "guide",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "axis": {
+      "$ref": "./guide-axis.json"
+    },
+    "offset": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "id",
+    "axis",
+    "offset"
+  ],
+  "additionalProperties": false
+}
