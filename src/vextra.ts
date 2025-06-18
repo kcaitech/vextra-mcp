@@ -1,5 +1,5 @@
 import fs from "fs";
-import { parseVextraDocument, parseVextraViewNode, SimplifiedDesign } from "@/transform/simplify-node-response";
+import { serializeDocument, Document } from "./simplify/document";
 import { downloadFile, saveFile } from "@/utils/fetch-with-retry";
 import { Logger } from "@/utils/logger";
 import yaml from "js-yaml";
@@ -128,13 +128,13 @@ export class VextraService {
   }
 
   // 获取整个文件
-  async getFile(fileKey: string, depth?: number | null): Promise<SimplifiedDesign> {
+  async getFile(fileKey: string, depth?: number | null): Promise<Document> {
     try {
       const document = await this.getDocument(fileKey);
       if (!document) {
         throw new Error("Failed to get document");
       }
-      const simplifiedResponse = parseVextraDocument(document);
+      const simplifiedResponse = await serializeDocument(document.data());
       writeLogs("figma-simplified.yml", simplifiedResponse);
       return simplifiedResponse;
     } catch (e) {

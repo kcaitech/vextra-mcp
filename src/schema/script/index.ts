@@ -53,9 +53,27 @@ try {
         outputPath: outputPaths.export,
         extraHeader(writer) {
             writer.nl('import { types } from "@kcdesign/data"')
+            writer.nl('import * as resultTypes from "./types"')
         },
         namespaces: {
-            types: 'types.'
+            sourceTypes: 'types.',
+            resultTypes: 'resultTypes.'
+        }, inject: {
+            GroupShape: {
+                content: `const ret: resultTypes.GroupShape = exportShape(source, depth) as resultTypes.GroupShape
+                    let export_childs = true;
+                    if (depth !== undefined) {
+                        --depth;
+                        if (depth < 0) {
+                            export_childs = false;
+                        }
+                    }
+                    if (export_childs) {
+                        ret.childs = exportGroupShape_childs(source.childs, depth)
+                    }
+                    if (source.fixedRadius !== undefined) ret.fixedRadius = source.fixedRadius
+                    return ret`
+                }
         }
     });
 

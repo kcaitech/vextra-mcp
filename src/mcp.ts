@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { VextraService } from "@/vextra";
-import type { SimplifiedDesign } from "@/transform/simplify-node-response";
+import type { serializeDocument, Document } from "./simplify/document";
 import yaml from "js-yaml";
 import { Logger } from "@/utils/logger";
 
@@ -70,7 +70,7 @@ function registerTools(
           } of ${nodeId ? `node ${nodeId} from file` : `full file`} ${fileKey}`,
         );
 
-        let file: SimplifiedDesign;
+        let file: Document;
         if (pageId && nodeId) {
           file = await vextraService.getNode(fileKey, pageId, nodeId, depth);
         } else if (pageId) {
