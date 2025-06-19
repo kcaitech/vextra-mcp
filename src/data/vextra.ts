@@ -1,12 +1,26 @@
 import fs from "fs";
 import { serializeDocument, Document, serializeNode } from "./simplify/document";
-import { saveFile } from "@/utils/fetch-with-retry";
 import { Logger } from "@/utils/logger";
 import yaml from "js-yaml";
-import { IDocument } from "./data/document";
-import { DocumentRemote } from "./data/document_remote";
+import { IDocument } from "./document";
+import { DocumentRemote } from "./document_remote";
 import { Shape } from "./simplify/types";
-import { DocumentLocal } from "./data/document_local";
+import { DocumentLocal } from "./document_local";
+import path from "path";
+
+function saveFile(
+  fileName: string,
+  localPath: string,
+  data: Uint8Array,
+): string {
+  const fullPath = path.join(localPath, fileName);
+  // Ensure local path exists
+  if (!fs.existsSync(localPath)) {
+    fs.mkdirSync(localPath, { recursive: true });
+  }
+  fs.writeFileSync(fullPath, data);
+  return fullPath;
+}
 
 type FetchImageParams = {
   pageId: string;
@@ -50,6 +64,8 @@ export class VextraService {
     let document: IDocument;
     if (fileKey.startsWith("file://")) {
       fileKey = fileKey.replace("file://", "/");
+      // 去除fileKey前面多余的/，只保留一个/
+      fileKey = fileKey.replace(/^\/+/, "/");
       document = new DocumentLocal(fileKey);
     } else {
       document = new DocumentRemote(this.oauthToken, fileKey);

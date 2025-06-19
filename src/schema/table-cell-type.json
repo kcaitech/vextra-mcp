@@ -1,9 +1,0 @@
-{
-    "description": "table cell types",
-    "enum": [
-        "none",
-        "text",
-        "image"
-    ],
-    "default": "none"
-}

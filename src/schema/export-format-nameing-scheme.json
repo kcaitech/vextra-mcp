@@ -1,8 +1,0 @@
-{
-    "description": "export format nameing scheme",
-    "enum": [
-        "suffix",
-        "prefix"
-    ],
-    "default": "suffix"
-}

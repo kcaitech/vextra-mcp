@@ -162,28 +162,6 @@ export type Ellipse = {
     rx: number,
     ry: number,
 }
-/* export file format */
-export enum ExportFileFormat {
-    Png = "png",
-    Jpg = "jpg",
-    Tiff = "tiff",
-    Eps = "eps",
-    Pdf = "pdf",
-    Webp = "webp",
-    Svg = "svg",
-}
-/* export format nameing scheme */
-export enum ExportFormatNameingScheme {
-    Suffix = "suffix",
-    Prefix = "prefix",
-}
-export type ExportOptions_exportFormats = Array<ExportFormat>
-/* visible scale type */
-export enum ExportVisibleScaleType {
-    Scale = "scale",
-    Width = "width",
-    Height = "height",
-}
 export type FillMask_fills = Array<Fill>
 /* fill rule */
 export enum FillRule {
@@ -208,7 +186,7 @@ export type GraphicsContextSettings = {
     blendMode: BlendMode,
     opacity: number,
 }
-export type GroupShape_childs = Array<GroupShape | ImageShape | PathShape | PathShape2 | RectShape | SymbolRefShape | SymbolShape | SymbolUnionShape | TextShape | Artboard | LineShape | OvalShape | TableShape | ContactShape | Shape | CutoutShape | BoolShape | PolygonShape | StarShape>
+export type GroupShape_childs = Array<GroupShape | ImageShape | PathShape | PathShape2 | RectShape | SymbolRefShape | SymbolShape | SymbolUnionShape | TextShape | Artboard | LineShape | OvalShape | ContactShape | Shape | CutoutShape | BoolShape | PolygonShape | StarShape>
 /* guide axis */
 export enum GuideAxis {
     X = "X",
@@ -604,21 +582,6 @@ export type Style_shadows = Array<Shadow>
 export type Style_innerShadows = Array<Shadow>
 export type Style_contacts = Array<ContactRole>
 export type SymbolShape_guides = Array<Guide>
-/* table cell info */
-export type TableCellAttr = {
-    rowSpan?: number,
-    colSpan?: number,
-}
-/* table cell types */
-export enum TableCellType {
-    None = "none",
-    Text = "text",
-    Image = "image",
-}
-export type TableShape_rowHeights = Array<CrdtNumber>
-export type TableShape_colWidths = Array<CrdtNumber>
-export type TableShape2_rowHeights = Array<CrdtNumber>
-export type TableShape2_colWidths = Array<CrdtNumber>
 /* text behaviour */
 export enum TextBehaviour {
     Flexible = "flexible",
@@ -759,25 +722,6 @@ export type BorderSideSetting = {
 export type ContactForm = {
     contactType: ContactType,
     shapeId: string,
-}
-/* export format */
-export type ExportFormat = {
-    id: string,
-    absoluteSize: number,
-    fileFormat: ExportFileFormat,
-    name: string,
-    namingScheme: ExportFormatNameingScheme,
-    scale: number,
-    visibleScaleType: ExportVisibleScaleType,
-}
-/* export options */
-export type ExportOptions = {
-    exportFormats: ExportOptions_exportFormats,
-    childOptions: number,
-    shouldTrim: boolean,
-    trimTransparent: boolean,
-    canvasBackground: boolean,
-    unfold: boolean,
 }
 /* gradient */
 export type Gradient = {
@@ -982,9 +926,15 @@ export type Style = {
     blursMask?: string,
     bordersMask?: string,
 }
+/* color */
+export type Variable = {
+    id: string,
+    type: VariableType,
+    name: string,
+    value: undefined | number | string | boolean | Color | Text | Gradient | Style | Variable_0 | Border | ContextSettings | CornerRadius | Blur | AutoLayout,
+}
 /* shape */
 export type Shape = {
-    id: string,
     name: string,
     type: ShapeType,
     transform: Transform,
@@ -993,7 +943,6 @@ export type Shape = {
     isFixedToViewport?: boolean,
     isLocked?: boolean,
     isVisible?: boolean,
-    exportOptions?: ExportOptions,
     nameIsFixed?: boolean,
     resizingConstraint?: number,
     resizingType?: ResizeType,
@@ -1014,34 +963,22 @@ export type Shape = {
     stackPositioning?: StackPositioning,
     radiusMask?: string,
 }
-/* table cell */
-export type TableCell = Shape & {
-    cellType: TableCellType,
-    text: Text,
-    imageRef?: string,
-    rowSpan?: number,
-    colSpan?: number,
-}
-/* table shape */
-export type TableShape = Shape & {
+/* symbol ref shape */
+export type SymbolRefShape = Shape & {
     size: ShapeSize,
-    cells: Map<string, TableCell>,
-    rowHeights: TableShape_rowHeights,
-    colWidths: TableShape_colWidths,
-    textAttr?: TextAttr,
+    refId: string,
+    variables: Map<string, Variable>,
+    overrides?: Map<string, string>,
+    isCustomSize?: boolean,
+    cornerRadius?: CornerRadius,
+    innerEnvScale?: number,
+    uniformScale?: number,
 }
 /* text shape */
 export type TextShape = Shape & {
     size: ShapeSize,
     text: Text,
     fixedRadius?: number,
-}
-/* color */
-export type Variable = {
-    id: string,
-    type: VariableType,
-    name: string,
-    value: undefined | number | string | boolean | Color | Text | Gradient | Style | Variable_0 | Border | ContextSettings | TableCell | ExportOptions | CornerRadius | Blur | AutoLayout,
 }
 /* comment */
 export type Comment = {
@@ -1077,17 +1014,6 @@ export type RectShape = PathShape
 export type StarShape = PathShape & {
     counts: number,
     innerAngle: number,
-}
-/* symbol ref shape */
-export type SymbolRefShape = Shape & {
-    size: ShapeSize,
-    refId: string,
-    variables: Map<string, Variable>,
-    overrides?: Map<string, string>,
-    isCustomSize?: boolean,
-    cornerRadius?: CornerRadius,
-    innerEnvScale?: number,
-    uniformScale?: number,
 }
 /* connection */
 export type Connection = PathShape & {
@@ -1141,6 +1067,7 @@ export type Page = GroupShape & {
 }
 /* symbol shape */
 export type SymbolShape = GroupShape & {
+    id: string,
     size: ShapeSize,
     variables: Map<string, Variable>,
     symtags?: Map<string, string>,
@@ -1151,12 +1078,3 @@ export type SymbolShape = GroupShape & {
 }
 /* symbol union shape */
 export type SymbolUnionShape = SymbolShape
-/* table shape2 */
-export type TableShape2 = Shape & {
-    size: ShapeSize,
-    cells: Map<string, Artboard>,
-    cellAttrs: Map<string, TableCellAttr>,
-    rowHeights: TableShape2_rowHeights,
-    colWidths: TableShape2_colWidths,
-    textAttr?: TextAttr,
-}

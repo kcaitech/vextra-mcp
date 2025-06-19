@@ -156,25 +156,6 @@ export function exportEllipse(source: types.Ellipse, depth?: number): resultType
     ret.ry = source.ry
     return ret
 }
-/* export file format */
-export function exportExportFileFormat(source: types.ExportFileFormat, depth?: number): resultTypes.ExportFileFormat {
-    return source
-}
-/* export format nameing scheme */
-export function exportExportFormatNameingScheme(source: types.ExportFormatNameingScheme, depth?: number): resultTypes.ExportFormatNameingScheme {
-    return source
-}
-export function exportExportOptions_exportFormats(source: types.ExportOptions_exportFormats, depth?: number): resultTypes.ExportOptions_exportFormats {
-    const ret: resultTypes.ExportOptions_exportFormats = []
-    source.forEach((source) => {
-        ret.push(exportExportFormat(source, depth))
-    })
-    return ret
-}
-/* visible scale type */
-export function exportExportVisibleScaleType(source: types.ExportVisibleScaleType, depth?: number): resultTypes.ExportVisibleScaleType {
-    return source
-}
 export function exportFillMask_fills(source: types.FillMask_fills, depth?: number): resultTypes.FillMask_fills {
     const ret: resultTypes.FillMask_fills = []
     source.forEach((source) => {
@@ -250,9 +231,6 @@ export function exportGroupShape_childs(source: types.GroupShape_childs, depth?:
             }
             if (source.typeId === "oval-shape") {
                 return exportOvalShape(source as types.OvalShape, depth)
-            }
-            if (source.typeId === "table-shape") {
-                return exportTableShape(source as types.TableShape, depth)
             }
             if (source.typeId === "contact-shape") {
                 return exportContactShape(source as types.ContactShape, depth)
@@ -665,45 +643,6 @@ export function exportSymbolShape_guides(source: types.SymbolShape_guides, depth
     })
     return ret
 }
-/* table cell info */
-export function exportTableCellAttr(source: types.TableCellAttr, depth?: number): resultTypes.TableCellAttr {
-    const ret: resultTypes.TableCellAttr = {} as resultTypes.TableCellAttr
-    if (source.rowSpan !== undefined) ret.rowSpan = source.rowSpan
-    if (source.colSpan !== undefined) ret.colSpan = source.colSpan
-    return ret
-}
-/* table cell types */
-export function exportTableCellType(source: types.TableCellType, depth?: number): resultTypes.TableCellType {
-    return source
-}
-export function exportTableShape_rowHeights(source: types.TableShape_rowHeights, depth?: number): resultTypes.TableShape_rowHeights {
-    const ret: resultTypes.TableShape_rowHeights = []
-    source.forEach((source) => {
-        ret.push(exportCrdtNumber(source, depth))
-    })
-    return ret
-}
-export function exportTableShape_colWidths(source: types.TableShape_colWidths, depth?: number): resultTypes.TableShape_colWidths {
-    const ret: resultTypes.TableShape_colWidths = []
-    source.forEach((source) => {
-        ret.push(exportCrdtNumber(source, depth))
-    })
-    return ret
-}
-export function exportTableShape2_rowHeights(source: types.TableShape2_rowHeights, depth?: number): resultTypes.TableShape2_rowHeights {
-    const ret: resultTypes.TableShape2_rowHeights = []
-    source.forEach((source) => {
-        ret.push(exportCrdtNumber(source, depth))
-    })
-    return ret
-}
-export function exportTableShape2_colWidths(source: types.TableShape2_colWidths, depth?: number): resultTypes.TableShape2_colWidths {
-    const ret: resultTypes.TableShape2_colWidths = []
-    source.forEach((source) => {
-        ret.push(exportCrdtNumber(source, depth))
-    })
-    return ret
-}
 /* text behaviour */
 export function exportTextBehaviour(source: types.TextBehaviour, depth?: number): resultTypes.TextBehaviour {
     return source
@@ -840,29 +779,6 @@ export function exportContactForm(source: types.ContactForm, depth?: number): re
     const ret: resultTypes.ContactForm = {} as resultTypes.ContactForm
     ret.contactType = exportContactType(source.contactType, depth)
     ret.shapeId = source.shapeId
-    return ret
-}
-/* export format */
-export function exportExportFormat(source: types.ExportFormat, depth?: number): resultTypes.ExportFormat {
-    const ret: resultTypes.ExportFormat = {} as resultTypes.ExportFormat
-    ret.id = source.id
-    ret.absoluteSize = source.absoluteSize
-    ret.fileFormat = exportExportFileFormat(source.fileFormat, depth)
-    ret.name = source.name
-    ret.namingScheme = exportExportFormatNameingScheme(source.namingScheme, depth)
-    ret.scale = source.scale
-    ret.visibleScaleType = exportExportVisibleScaleType(source.visibleScaleType, depth)
-    return ret
-}
-/* export options */
-export function exportExportOptions(source: types.ExportOptions, depth?: number): resultTypes.ExportOptions {
-    const ret: resultTypes.ExportOptions = {} as resultTypes.ExportOptions
-    ret.exportFormats = exportExportOptions_exportFormats(source.exportFormats, depth)
-    ret.childOptions = source.childOptions
-    ret.shouldTrim = source.shouldTrim
-    ret.trimTransparent = source.trimTransparent
-    ret.canvasBackground = source.canvasBackground
-    ret.unfold = source.unfold
     return ret
 }
 /* gradient */
@@ -1119,80 +1035,6 @@ export function exportStyle(source: types.Style, depth?: number): resultTypes.St
     if (source.bordersMask !== undefined) ret.bordersMask = source.bordersMask
     return ret
 }
-/* shape */
-export function exportShape(source: types.Shape, depth?: number): resultTypes.Shape {
-    const ret: resultTypes.Shape = {} as resultTypes.Shape
-    ret.id = source.id
-    ret.name = source.name
-    ret.type = exportShapeType(source.type, depth)
-    ret.transform = exportTransform(source.transform, depth)
-    ret.style = exportStyle(source.style, depth)
-    if (source.boolOp !== undefined) ret.boolOp = exportBoolOp(source.boolOp, depth)
-    if (source.isFixedToViewport !== undefined) ret.isFixedToViewport = source.isFixedToViewport
-    if (source.isLocked !== undefined) ret.isLocked = source.isLocked
-    if (source.isVisible !== undefined) ret.isVisible = source.isVisible
-    if (source.exportOptions !== undefined) ret.exportOptions = exportExportOptions(source.exportOptions, depth)
-    if (source.nameIsFixed !== undefined) ret.nameIsFixed = source.nameIsFixed
-    if (source.resizingConstraint !== undefined) ret.resizingConstraint = source.resizingConstraint
-    if (source.resizingType !== undefined) ret.resizingType = exportResizeType(source.resizingType, depth)
-    if (source.constrainerProportions !== undefined) ret.constrainerProportions = source.constrainerProportions
-    if (source.clippingMaskMode !== undefined) ret.clippingMaskMode = source.clippingMaskMode
-    if (source.hasClippingMask !== undefined) ret.hasClippingMask = source.hasClippingMask
-    if (source.shouldBreakMaskChain !== undefined) ret.shouldBreakMaskChain = source.shouldBreakMaskChain
-    if (source.varbinds !== undefined) ret.varbinds = (() => {
-        const ret: any = {}
-        source.varbinds.forEach((source, k) => {
-            ret[k] = source
-        })
-        return ret
-    })()
-    if (source.haveEdit !== undefined) ret.haveEdit = source.haveEdit
-    if (source.prototypeStartingPoint !== undefined) ret.prototypeStartingPoint = exportPrototypeStartingPoint(source.prototypeStartingPoint, depth)
-    if (source.prototypeInteractions !== undefined) ret.prototypeInteractions = exportShape_prototypeInteractions(source.prototypeInteractions, depth)
-    if (source.overlayPosition !== undefined) ret.overlayPosition = exportOverlayPosition(source.overlayPosition, depth)
-    if (source.overlayBackgroundInteraction !== undefined) ret.overlayBackgroundInteraction = exportOverlayBackgroundInteraction(source.overlayBackgroundInteraction, depth)
-    if (source.overlayBackgroundAppearance !== undefined) ret.overlayBackgroundAppearance = exportOverlayBackgroundAppearance(source.overlayBackgroundAppearance, depth)
-    if (source.scrollDirection !== undefined) ret.scrollDirection = exportScrollDirection(source.scrollDirection, depth)
-    if (source.scrollBehavior !== undefined) ret.scrollBehavior = exportScrollBehavior(source.scrollBehavior, depth)
-    if (source.mask !== undefined) ret.mask = source.mask
-    if (source.stackPositioning !== undefined) ret.stackPositioning = exportStackPositioning(source.stackPositioning, depth)
-    if (source.radiusMask !== undefined) ret.radiusMask = source.radiusMask
-    return ret
-}
-/* table cell */
-export function exportTableCell(source: types.TableCell, depth?: number): resultTypes.TableCell {
-    const ret: resultTypes.TableCell = exportShape(source, depth) as resultTypes.TableCell
-    ret.cellType = exportTableCellType(source.cellType, depth)
-    ret.text = exportText(source.text, depth)
-    if (source.imageRef !== undefined) ret.imageRef = source.imageRef
-    if (source.rowSpan !== undefined) ret.rowSpan = source.rowSpan
-    if (source.colSpan !== undefined) ret.colSpan = source.colSpan
-    return ret
-}
-/* table shape */
-export function exportTableShape(source: types.TableShape, depth?: number): resultTypes.TableShape {
-    const ret: resultTypes.TableShape = exportShape(source, depth) as resultTypes.TableShape
-    ret.size = exportShapeSize(source.size, depth)
-    ret.cells = (() => {
-        const ret: any = {}
-        source.cells.forEach((source, k) => {
-            ret[k] = exportTableCell(source, depth)
-        })
-        return ret
-    })()
-    ret.rowHeights = exportTableShape_rowHeights(source.rowHeights, depth)
-    ret.colWidths = exportTableShape_colWidths(source.colWidths, depth)
-    if (source.textAttr !== undefined) ret.textAttr = exportTextAttr(source.textAttr, depth)
-    return ret
-}
-/* text shape */
-export function exportTextShape(source: types.TextShape, depth?: number): resultTypes.TextShape {
-    const ret: resultTypes.TextShape = exportShape(source, depth) as resultTypes.TextShape
-    ret.size = exportShapeSize(source.size, depth)
-    ret.text = exportText(source.text, depth)
-    if (source.fixedRadius !== undefined) ret.fixedRadius = source.fixedRadius
-    return ret
-}
 /* color */
 export function exportVariable(source: types.Variable, depth?: number): resultTypes.Variable {
     const ret: resultTypes.Variable = {} as resultTypes.Variable
@@ -1224,12 +1066,6 @@ export function exportVariable(source: types.Variable, depth?: number): resultTy
         if (source.value.typeId === "context-settings") {
             return exportContextSettings(source.value as types.ContextSettings, depth)
         }
-        if (source.value.typeId === "table-cell") {
-            return exportTableCell(source.value as types.TableCell, depth)
-        }
-        if (source.value.typeId === "export-options") {
-            return exportExportOptions(source.value as types.ExportOptions, depth)
-        }
         if (source.value.typeId === "corner-radius") {
             return exportCornerRadius(source.value as types.CornerRadius, depth)
         }
@@ -1241,6 +1077,77 @@ export function exportVariable(source: types.Variable, depth?: number): resultTy
         }
         throw new Error("unknow typeId: " + source.value.typeId)
     })()
+    return ret
+}
+/* shape */
+export function exportShape(source: types.Shape, depth?: number): resultTypes.Shape {
+    const ret: resultTypes.Shape = {} as resultTypes.Shape
+    ret.name = source.name
+    ret.type = exportShapeType(source.type, depth)
+    ret.transform = exportTransform(source.transform, depth)
+    ret.style = exportStyle(source.style, depth)
+    if (source.boolOp !== undefined) ret.boolOp = exportBoolOp(source.boolOp, depth)
+    if (source.isFixedToViewport !== undefined) ret.isFixedToViewport = source.isFixedToViewport
+    if (source.isLocked !== undefined) ret.isLocked = source.isLocked
+    if (source.isVisible !== undefined) ret.isVisible = source.isVisible
+    if (source.nameIsFixed !== undefined) ret.nameIsFixed = source.nameIsFixed
+    if (source.resizingConstraint !== undefined) ret.resizingConstraint = source.resizingConstraint
+    if (source.resizingType !== undefined) ret.resizingType = exportResizeType(source.resizingType, depth)
+    if (source.constrainerProportions !== undefined) ret.constrainerProportions = source.constrainerProportions
+    if (source.clippingMaskMode !== undefined) ret.clippingMaskMode = source.clippingMaskMode
+    if (source.hasClippingMask !== undefined) ret.hasClippingMask = source.hasClippingMask
+    if (source.shouldBreakMaskChain !== undefined) ret.shouldBreakMaskChain = source.shouldBreakMaskChain
+    if (source.varbinds !== undefined) ret.varbinds = (() => {
+        const ret: any = {}
+        source.varbinds.forEach((source, k) => {
+            ret[k] = source
+        })
+        return ret
+    })()
+    if (source.haveEdit !== undefined) ret.haveEdit = source.haveEdit
+    if (source.prototypeStartingPoint !== undefined) ret.prototypeStartingPoint = exportPrototypeStartingPoint(source.prototypeStartingPoint, depth)
+    if (source.prototypeInteractions !== undefined) ret.prototypeInteractions = exportShape_prototypeInteractions(source.prototypeInteractions, depth)
+    if (source.overlayPosition !== undefined) ret.overlayPosition = exportOverlayPosition(source.overlayPosition, depth)
+    if (source.overlayBackgroundInteraction !== undefined) ret.overlayBackgroundInteraction = exportOverlayBackgroundInteraction(source.overlayBackgroundInteraction, depth)
+    if (source.overlayBackgroundAppearance !== undefined) ret.overlayBackgroundAppearance = exportOverlayBackgroundAppearance(source.overlayBackgroundAppearance, depth)
+    if (source.scrollDirection !== undefined) ret.scrollDirection = exportScrollDirection(source.scrollDirection, depth)
+    if (source.scrollBehavior !== undefined) ret.scrollBehavior = exportScrollBehavior(source.scrollBehavior, depth)
+    if (source.mask !== undefined) ret.mask = source.mask
+    if (source.stackPositioning !== undefined) ret.stackPositioning = exportStackPositioning(source.stackPositioning, depth)
+    if (source.radiusMask !== undefined) ret.radiusMask = source.radiusMask
+    return ret
+}
+/* symbol ref shape */
+export function exportSymbolRefShape(source: types.SymbolRefShape, depth?: number): resultTypes.SymbolRefShape {
+    const ret: resultTypes.SymbolRefShape = exportShape(source, depth) as resultTypes.SymbolRefShape
+    ret.size = exportShapeSize(source.size, depth)
+    ret.refId = source.refId
+    ret.variables = (() => {
+        const ret: any = {}
+        source.variables.forEach((source, k) => {
+            ret[k] = exportVariable(source, depth)
+        })
+        return ret
+    })()
+    if (source.overrides !== undefined) ret.overrides = (() => {
+        const ret: any = {}
+        source.overrides.forEach((source, k) => {
+            ret[k] = source
+        })
+        return ret
+    })()
+    if (source.isCustomSize !== undefined) ret.isCustomSize = source.isCustomSize
+    if (source.cornerRadius !== undefined) ret.cornerRadius = exportCornerRadius(source.cornerRadius, depth)
+    if (source.innerEnvScale !== undefined) ret.innerEnvScale = source.innerEnvScale
+    if (source.uniformScale !== undefined) ret.uniformScale = source.uniformScale
+    return ret
+}
+/* text shape */
+export function exportTextShape(source: types.TextShape, depth?: number): resultTypes.TextShape {
+    const ret: resultTypes.TextShape = exportShape(source, depth) as resultTypes.TextShape
+    ret.size = exportShapeSize(source.size, depth)
+    ret.text = exportText(source.text, depth)
+    if (source.fixedRadius !== undefined) ret.fixedRadius = source.fixedRadius
     return ret
 }
 /* comment */
@@ -1289,31 +1196,6 @@ export function exportStarShape(source: types.StarShape, depth?: number): result
     const ret: resultTypes.StarShape = exportPathShape(source, depth) as resultTypes.StarShape
     ret.counts = source.counts
     ret.innerAngle = source.innerAngle
-    return ret
-}
-/* symbol ref shape */
-export function exportSymbolRefShape(source: types.SymbolRefShape, depth?: number): resultTypes.SymbolRefShape {
-    const ret: resultTypes.SymbolRefShape = exportShape(source, depth) as resultTypes.SymbolRefShape
-    ret.size = exportShapeSize(source.size, depth)
-    ret.refId = source.refId
-    ret.variables = (() => {
-        const ret: any = {}
-        source.variables.forEach((source, k) => {
-            ret[k] = exportVariable(source, depth)
-        })
-        return ret
-    })()
-    if (source.overrides !== undefined) ret.overrides = (() => {
-        const ret: any = {}
-        source.overrides.forEach((source, k) => {
-            ret[k] = source
-        })
-        return ret
-    })()
-    if (source.isCustomSize !== undefined) ret.isCustomSize = source.isCustomSize
-    if (source.cornerRadius !== undefined) ret.cornerRadius = exportCornerRadius(source.cornerRadius, depth)
-    if (source.innerEnvScale !== undefined) ret.innerEnvScale = source.innerEnvScale
-    if (source.uniformScale !== undefined) ret.uniformScale = source.uniformScale
     return ret
 }
 /* connection */
@@ -1401,6 +1283,7 @@ export function exportPage(source: types.Page, depth?: number): resultTypes.Page
 /* symbol shape */
 export function exportSymbolShape(source: types.SymbolShape, depth?: number): resultTypes.SymbolShape {
     const ret: resultTypes.SymbolShape = exportGroupShape(source, depth) as resultTypes.SymbolShape
+    ret.id = source.id
     ret.size = exportShapeSize(source.size, depth)
     ret.variables = (() => {
         const ret: any = {}
@@ -1425,28 +1308,5 @@ export function exportSymbolShape(source: types.SymbolShape, depth?: number): re
 /* symbol union shape */
 export function exportSymbolUnionShape(source: types.SymbolUnionShape, depth?: number): resultTypes.SymbolUnionShape {
     const ret: resultTypes.SymbolUnionShape = exportSymbolShape(source, depth) as resultTypes.SymbolUnionShape
-    return ret
-}
-/* table shape2 */
-export function exportTableShape2(source: types.TableShape2, depth?: number): resultTypes.TableShape2 {
-    const ret: resultTypes.TableShape2 = exportShape(source, depth) as resultTypes.TableShape2
-    ret.size = exportShapeSize(source.size, depth)
-    ret.cells = (() => {
-        const ret: any = {}
-        source.cells.forEach((source, k) => {
-            ret[k] = exportArtboard(source, depth)
-        })
-        return ret
-    })()
-    ret.cellAttrs = (() => {
-        const ret: any = {}
-        source.cellAttrs.forEach((source, k) => {
-            ret[k] = exportTableCellAttr(source, depth)
-        })
-        return ret
-    })()
-    ret.rowHeights = exportTableShape2_rowHeights(source.rowHeights, depth)
-    ret.colWidths = exportTableShape2_colWidths(source.colWidths, depth)
-    if (source.textAttr !== undefined) ret.textAttr = exportTextAttr(source.textAttr, depth)
     return ret
 }

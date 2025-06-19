@@ -9,7 +9,7 @@ import { Logger } from "./utils/logger.js";
 
 
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createServer } from "./mcp.js";
+import { createServer } from "./mcp";
 import yargs from "yargs";
 
 

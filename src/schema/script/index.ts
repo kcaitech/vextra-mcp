@@ -15,7 +15,7 @@ import { gen as genClass } from "./class";
 import { gen as genExp } from "./export";
 
 const schemaDir = './src/schema/';
-const outputDir = './src/simplify/';
+const outputDir = './src/data/simplify/';
 
 const extraOrder = ['GroupShape']; // 因循环引用，无法确定输出顺序。这里将GroupShape 放到最后生成
 

@@ -4,3 +4,4 @@ dist/
 logs/
 *.log
 logs/
+.VSCodeCounter

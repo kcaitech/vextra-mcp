@@ -2,9 +2,6 @@
     "description": "shape",
     "type": "object",
     "properties": {
-        "id": {
-            "type": "string"
-        },
         "type": {
             "$ref": "./shape-type.json"
         },
@@ -25,9 +22,6 @@
         },
         "isVisible": {
             "type": "boolean"
-        },
-        "exportOptions": {
-            "$ref": "./export-options.json"
         },
         "name": {
             "type": "string"
@@ -100,7 +94,6 @@
         }
     },
     "required": [
-        "id",
         "name",
         "type",
         "transform",

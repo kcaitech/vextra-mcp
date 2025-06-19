@@ -1,6 +1,14 @@
-import { Artboard, BoolShape, ContactShape, CutoutShape, GroupShape, ImageShape, LineShape, OvalShape, PathShape, PolygonShape, RectShape, ShapeType, StarShape, SymbolRefShape, SymbolShape, SymbolUnionShape, TableShape2, TextShape, Document as SourceDocument, Page as SourcePage, Shape as SourceShape, ShapeView, adapt2Shape } from "@kcdesign/data";
+import { Artboard, BoolShape, ContactShape, CutoutShape, 
+    GroupShape, ImageShape, LineShape, OvalShape, PathShape, 
+    PolygonShape, RectShape, ShapeType, StarShape, SymbolRefShape, SymbolShape, 
+    SymbolUnionShape, TableShape2, TextShape, Document as SourceDocument, 
+    Page as SourcePage, Shape as SourceShape, ShapeView, adapt2Shape } from "@kcdesign/data";
 import { Page, Shape } from "./types";
-import { exportArtboard, exportPage, exportGroupShape, exportRectShape, exportBoolShape, exportSymbolShape, exportTextShape, exportImageShape, exportContactShape, exportShape, exportCutoutShape, exportLineShape, exportOvalShape, exportPathShape, exportPolygonShape, exportStarShape, exportSymbolRefShape, exportSymbolUnionShape, exportTableShape2 } from "./export";
+import { exportArtboard, exportPage, exportGroupShape, exportRectShape, 
+    exportBoolShape, exportSymbolShape, exportTextShape, exportImageShape, 
+    exportContactShape, exportShape, exportCutoutShape, exportLineShape, exportOvalShape, 
+    exportPathShape, exportPolygonShape, exportStarShape, exportSymbolRefShape, 
+    exportSymbolUnionShape } from "./export";
 
 export class Document {
     name: string;
@@ -65,9 +73,6 @@ export async function serializeNode(view: ShapeView, depth?: number): Promise<Sh
             return exportSymbolRefShape(node as SymbolRefShape, depth);
         case ShapeType.SymbolUnion:
             return exportSymbolUnionShape(node as SymbolUnionShape, depth);
-        case ShapeType.Table:
-            return exportTableShape2(node as TableShape2, depth);
-        case ShapeType.Triangle:
         default: 
             return exportShape(node as SourceShape, depth);
     }

@@ -20,9 +20,6 @@ export {
     ContactType,
     CornerType,
     CurveMode,
-    ExportFileFormat,
-    ExportFormatNameingScheme,
-    ExportVisibleScaleType,
     FillRule,
     FillType,
     GradientType,
@@ -55,7 +52,6 @@ export {
     StrikethroughType,
     StyleLibType,
     StyleVarType,
-    TableCellType,
     TextBehaviour,
     TextHorAlign,
     TextOrientation,
@@ -76,9 +72,6 @@ import {
     ContactType,
     CornerType,
     CurveMode,
-    ExportFileFormat,
-    ExportFormatNameingScheme,
-    ExportVisibleScaleType,
     FillRule,
     FillType,
     GradientType,
@@ -111,7 +104,6 @@ import {
     StrikethroughType,
     StyleLibType,
     StyleVarType,
-    TableCellType,
     TextBehaviour,
     TextHorAlign,
     TextOrientation,
@@ -256,7 +248,6 @@ export class Ellipse {
         this.ry = ry
     }
 }
-type ExportOptions_exportFormats = Array<ExportFormat>
 type FillMask_fills = Array<Fill>
 type Gradient_stops = Array<Stop>
 /* graphics contex settings */
@@ -269,7 +260,7 @@ export class GraphicsContextSettings {
         this.opacity = opacity
     }
 }
-type GroupShape_childs = Array<GroupShape | ImageShape | PathShape | PathShape2 | RectShape | SymbolRefShape | SymbolShape | SymbolUnionShape | TextShape | Artboard | LineShape | OvalShape | TableShape | ContactShape | Shape | CutoutShape | BoolShape | PolygonShape | StarShape>
+type GroupShape_childs = Array<GroupShape | ImageShape | PathShape | PathShape2 | RectShape | SymbolRefShape | SymbolShape | SymbolUnionShape | TextShape | Artboard | LineShape | OvalShape | ContactShape | Shape | CutoutShape | BoolShape | PolygonShape | StarShape>
 /* guide */
 export class Guide {
     typeId = "guide"
@@ -497,16 +488,6 @@ type Style_shadows = Array<Shadow>
 type Style_innerShadows = Array<Shadow>
 type Style_contacts = Array<ContactRole>
 type SymbolShape_guides = Array<Guide>
-/* table cell info */
-export class TableCellAttr {
-    typeId = "table-cell-attr"
-    rowSpan?: number
-    colSpan?: number
-}
-type TableShape_rowHeights = Array<CrdtNumber>
-type TableShape_colWidths = Array<CrdtNumber>
-type TableShape2_rowHeights = Array<CrdtNumber>
-type TableShape2_colWidths = Array<CrdtNumber>
 type Text_paras = Array<Para>
 /* transform */
 export class Transform {
@@ -622,44 +603,6 @@ export class ContactForm {
     constructor(contactType: ContactType, shapeId: string) {
         this.contactType = contactType
         this.shapeId = shapeId
-    }
-}
-/* export format */
-export class ExportFormat {
-    typeId = "export-format"
-    id: string
-    absoluteSize: number
-    fileFormat: ExportFileFormat
-    name: string
-    namingScheme: ExportFormatNameingScheme
-    scale: number
-    visibleScaleType: ExportVisibleScaleType
-    constructor(id: string, absoluteSize: number, fileFormat: ExportFileFormat, name: string, namingScheme: ExportFormatNameingScheme, scale: number, visibleScaleType: ExportVisibleScaleType) {
-        this.id = id
-        this.absoluteSize = absoluteSize
-        this.fileFormat = fileFormat
-        this.name = name
-        this.namingScheme = namingScheme
-        this.scale = scale
-        this.visibleScaleType = visibleScaleType
-    }
-}
-/* export options */
-export class ExportOptions {
-    typeId = "export-options"
-    exportFormats: ExportOptions_exportFormats
-    childOptions: number
-    shouldTrim: boolean
-    trimTransparent: boolean
-    canvasBackground: boolean
-    unfold: boolean
-    constructor(exportFormats: ExportOptions_exportFormats, childOptions: number = 0, shouldTrim: boolean = false, trimTransparent: boolean = false, canvasBackground: boolean = false, unfold: boolean = false) {
-        this.exportFormats = exportFormats
-        this.childOptions = childOptions
-        this.shouldTrim = shouldTrim
-        this.trimTransparent = trimTransparent
-        this.canvasBackground = canvasBackground
-        this.unfold = unfold
     }
 }
 /* gradient */
@@ -987,10 +930,23 @@ export class Style {
         this.borders = borders
     }
 }
+/* color */
+export class Variable {
+    typeId = "variable"
+    id: string
+    type: VariableType
+    name: string
+    value: undefined | number | string | boolean | Color | Text | Gradient | Style | Variable_0 | Border | ContextSettings | CornerRadius | Blur | AutoLayout
+    constructor(id: string, type: VariableType, name: string, value: undefined | number | string | boolean | Color | Text | Gradient | Style | Variable_0 | Border | ContextSettings | CornerRadius | Blur | AutoLayout) {
+        this.id = id
+        this.type = type
+        this.name = name
+        this.value = value
+    }
+}
 /* shape */
 export class Shape {
     typeId = "shape"
-    id: string
     name: string
     type: ShapeType
     transform: Transform
@@ -999,7 +955,6 @@ export class Shape {
     isFixedToViewport?: boolean
     isLocked?: boolean
     isVisible?: boolean
-    exportOptions?: ExportOptions
     nameIsFixed?: boolean
     resizingConstraint?: number
     resizingType?: ResizeType
@@ -1019,42 +974,29 @@ export class Shape {
     mask?: boolean
     stackPositioning?: StackPositioning
     radiusMask?: string
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style) {
-        this.id = id
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style) {
         this.name = name
         this.type = type
         this.transform = transform
         this.style = style
     }
 }
-/* table cell */
-export class TableCell extends Shape {
-    typeId = "table-cell"
-    cellType: TableCellType
-    text: Text
-    imageRef?: string
-    rowSpan?: number
-    colSpan?: number
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, cellType: TableCellType, text: Text) {
-        super(id, name, type, transform, style)
-        this.cellType = cellType
-        this.text = text
-    }
-}
-/* table shape */
-export class TableShape extends Shape {
-    typeId = "table-shape"
+/* symbol ref shape */
+export class SymbolRefShape extends Shape {
+    typeId = "symbol-ref-shape"
     size: ShapeSize
-    cells: Map<string, TableCell>
-    rowHeights: TableShape_rowHeights
-    colWidths: TableShape_colWidths
-    textAttr?: TextAttr
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, cells: Map<string, TableCell>, rowHeights: TableShape_rowHeights, colWidths: TableShape_colWidths) {
-        super(id, name, type, transform, style)
+    refId: string
+    variables: Map<string, Variable>
+    overrides?: Map<string, string>
+    isCustomSize?: boolean
+    cornerRadius?: CornerRadius
+    innerEnvScale?: number
+    uniformScale?: number
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, refId: string, variables: Map<string, Variable>) {
+        super(name, type, transform, style)
         this.size = size
-        this.cells = cells
-        this.rowHeights = rowHeights
-        this.colWidths = colWidths
+        this.refId = refId
+        this.variables = variables
     }
 }
 /* text shape */
@@ -1063,24 +1005,10 @@ export class TextShape extends Shape {
     size: ShapeSize
     text: Text
     fixedRadius?: number
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, text: Text) {
-        super(id, name, type, transform, style)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, text: Text) {
+        super(name, type, transform, style)
         this.size = size
         this.text = text
-    }
-}
-/* color */
-export class Variable {
-    typeId = "variable"
-    id: string
-    type: VariableType
-    name: string
-    value: undefined | number | string | boolean | Color | Text | Gradient | Style | Variable_0 | Border | ContextSettings | TableCell | ExportOptions | CornerRadius | Blur | AutoLayout
-    constructor(id: string, type: VariableType, name: string, value: undefined | number | string | boolean | Color | Text | Gradient | Style | Variable_0 | Border | ContextSettings | TableCell | ExportOptions | CornerRadius | Blur | AutoLayout) {
-        this.id = id
-        this.type = type
-        this.name = name
-        this.value = value
     }
 }
 /* comment */
@@ -1111,8 +1039,8 @@ export class PathShape extends Shape {
     size: ShapeSize
     pathsegs: PathShape_pathsegs
     fixedRadius?: number
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs) {
-        super(id, name, type, transform, style)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs) {
+        super(name, type, transform, style)
         this.size = size
         this.pathsegs = pathsegs
     }
@@ -1123,8 +1051,8 @@ export class PathShape2 extends Shape {
     size: ShapeSize
     pathsegs: PathShape2_pathsegs
     fixedRadius?: number
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape2_pathsegs) {
-        super(id, name, type, transform, style)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape2_pathsegs) {
+        super(name, type, transform, style)
         this.size = size
         this.pathsegs = pathsegs
     }
@@ -1133,8 +1061,8 @@ export class PathShape2 extends Shape {
 export class PolygonShape extends PathShape {
     typeId = "polygon-shape"
     counts: number
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, counts: number = 3) {
-        super(id, name, type, transform, style, size, pathsegs)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, counts: number = 3) {
+        super(name, type, transform, style, size, pathsegs)
         this.counts = counts
     }
 }
@@ -1147,28 +1075,10 @@ export class StarShape extends PathShape {
     typeId = "star-shape"
     counts: number
     innerAngle: number
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, counts: number = 5, innerAngle: number = 0.382) {
-        super(id, name, type, transform, style, size, pathsegs)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, counts: number = 5, innerAngle: number = 0.382) {
+        super(name, type, transform, style, size, pathsegs)
         this.counts = counts
         this.innerAngle = innerAngle
-    }
-}
-/* symbol ref shape */
-export class SymbolRefShape extends Shape {
-    typeId = "symbol-ref-shape"
-    size: ShapeSize
-    refId: string
-    variables: Map<string, Variable>
-    overrides?: Map<string, string>
-    isCustomSize?: boolean
-    cornerRadius?: CornerRadius
-    innerEnvScale?: number
-    uniformScale?: number
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, refId: string, variables: Map<string, Variable>) {
-        super(id, name, type, transform, style)
-        this.size = size
-        this.refId = refId
-        this.variables = variables
     }
 }
 /* connection */
@@ -1177,8 +1087,8 @@ export class Connection extends PathShape {
     isEdited: boolean
     from?: ContactForm
     to?: ContactForm
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, isEdited: boolean) {
-        super(id, name, type, transform, style, size, pathsegs)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, isEdited: boolean) {
+        super(name, type, transform, style, size, pathsegs)
         this.isEdited = isEdited
     }
 }
@@ -1190,8 +1100,8 @@ export class ContactShape extends PathShape {
     mark: boolean
     from?: ContactForm
     to?: ContactForm
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, isEdited: boolean, text: Text, mark: boolean) {
-        super(id, name, type, transform, style, size, pathsegs)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, isEdited: boolean, text: Text, mark: boolean) {
+        super(name, type, transform, style, size, pathsegs)
         this.isEdited = isEdited
         this.text = text
         this.mark = mark
@@ -1205,8 +1115,8 @@ export class CutoutShape extends PathShape {
 export class ImageShape extends PathShape {
     typeId = "image-shape"
     imageRef: string
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, imageRef: string) {
-        super(id, name, type, transform, style, size, pathsegs)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, imageRef: string) {
+        super(name, type, transform, style, size, pathsegs)
         this.imageRef = imageRef
     }
 }
@@ -1221,8 +1131,8 @@ export class OvalShape extends PathShape {
     startingAngle?: number
     endingAngle?: number
     innerRadius?: number
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, ellipse: Ellipse) {
-        super(id, name, type, transform, style, size, pathsegs)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, ellipse: Ellipse) {
+        super(name, type, transform, style, size, pathsegs)
         this.ellipse = ellipse
     }
 }
@@ -1231,8 +1141,8 @@ export class GroupShape extends Shape {
     typeId = "group-shape"
     childs: GroupShape_childs
     fixedRadius?: number
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs) {
-        super(id, name, type, transform, style)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs) {
+        super(name, type, transform, style)
         this.childs = childs
     }
 }
@@ -1246,6 +1156,7 @@ export class Page extends GroupShape {
 /* symbol shape */
 export class SymbolShape extends GroupShape {
     typeId = "symbol-shape"
+    id: string
     size: ShapeSize
     variables: Map<string, Variable>
     symtags?: Map<string, string>
@@ -1253,8 +1164,9 @@ export class SymbolShape extends GroupShape {
     guides?: SymbolShape_guides
     autoLayout?: AutoLayout
     frameMaskDisabled?: boolean
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs, size: ShapeSize, variables: Map<string, Variable>) {
-        super(id, name, type, transform, style, childs)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs, id: string, size: ShapeSize, variables: Map<string, Variable>) {
+        super(name, type, transform, style, childs)
+        this.id = id
         this.size = size
         this.variables = variables
     }
@@ -1262,24 +1174,6 @@ export class SymbolShape extends GroupShape {
 /* symbol union shape */
 export class SymbolUnionShape extends SymbolShape {
     typeId = "symbol-union-shape"
-}
-/* table shape2 */
-export class TableShape2 extends Shape {
-    typeId = "table-shape2"
-    size: ShapeSize
-    cells: Map<string, Artboard>
-    cellAttrs: Map<string, TableCellAttr>
-    rowHeights: TableShape2_rowHeights
-    colWidths: TableShape2_colWidths
-    textAttr?: TextAttr
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, cells: Map<string, Artboard>, cellAttrs: Map<string, TableCellAttr>, rowHeights: TableShape2_rowHeights, colWidths: TableShape2_colWidths) {
-        super(id, name, type, transform, style)
-        this.size = size
-        this.cells = cells
-        this.cellAttrs = cellAttrs
-        this.rowHeights = rowHeights
-        this.colWidths = colWidths
-    }
 }
 /* artboard shape */
 export class Artboard extends GroupShape {
@@ -1289,8 +1183,8 @@ export class Artboard extends GroupShape {
     guides?: Artboard_guides
     autoLayout?: AutoLayout
     frameMaskDisabled?: boolean
-    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs, size: ShapeSize) {
-        super(id, name, type, transform, style, childs)
+    constructor(name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs, size: ShapeSize) {
+        super(name, type, transform, style, childs)
         this.size = size
     }
 }
