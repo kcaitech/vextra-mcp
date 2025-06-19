@@ -29,10 +29,7 @@ export async function startHttpServer(port: number, mcpServer: McpServer): Promi
   app.post("/mcp", async (req, res) => {
     Logger.log("Received StreamableHTTP request");
     const sessionId = req.headers["mcp-session-id"] as string | undefined;
-    // Logger.log("Session ID:", sessionId);
-    // Logger.log("Headers:", req.headers);
-    // Logger.log("Body:", req.body);
-    // Logger.log("Is Initialize Request:", isInitializeRequest(req.body));
+
     let transport: StreamableHTTPServerTransport;
 
     if (sessionId && transports.streamable[sessionId]) {
