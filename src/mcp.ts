@@ -1,9 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { VextraService } from "@/vextra";
-import type { serializeDocument, Document } from "./simplify/document";
+import { Document } from "./simplify/document";
 import yaml from "js-yaml";
 import { Logger } from "@/utils/logger";
+import { Shape } from "./simplify/types";
 
 const serverInfo = {
   name: "Vextra MCP Server",
@@ -41,7 +42,8 @@ function registerTools(
       fileKey: z
         .string()
         .describe(
-          "The key of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/...",
+          `The key of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/...
+          Or the file path of the local file, witch the extension is .vext. Local file path is start with file://...`,
         ),
       pageId: z
         .string()
@@ -65,34 +67,26 @@ function registerTools(
     async ({ fileKey, pageId, nodeId, depth }) => {
       try {
         Logger.log(
-          `Fetching ${
-            depth ? `${depth} layers deep` : "all layers"
+          `Fetching ${depth ? `${depth} layers deep` : "all layers"
           } of ${nodeId ? `node ${nodeId} from file` : `full file`} ${fileKey}`,
         );
 
-        let file: Document;
+        let result: Document | Shape;
         if (pageId && nodeId) {
-          file = await vextraService.getNode(fileKey, pageId, nodeId, depth);
+          result = await vextraService.getNode(fileKey, pageId, nodeId, depth);
         } else if (pageId) {
-          file = await vextraService.getNode(fileKey, pageId, pageId, depth);
+          result = await vextraService.getNode(fileKey, pageId, pageId, depth);
         } else {
-          file = await vextraService.getFile(fileKey, depth);
+          result = await vextraService.getFile(fileKey, depth);
         }
 
-        Logger.log(`Successfully fetched file: ${file.name}`);
-        const { nodes, globalVars, ...metadata } = file;
-
-        const result = {
-          metadata,
-          nodes,
-          globalVars,
-        };
+        // Logger.log(`Successfully fetched file: ${file.name}`);
 
         Logger.log(`Generating ${outputFormat.toUpperCase()} result from file`);
         const formattedResult =
           outputFormat === "json" ? JSON.stringify(result, null, 2) : yaml.dump(result);
 
-        Logger.log("Sending result to client");
+        Logger.log("Sending result to client", formattedResult);
         return {
           content: [{ type: "text", text: formattedResult }],
         };
@@ -113,7 +107,10 @@ function registerTools(
     "download_vextra_images",
     "Download SVG and PNG images used in a Vextra file based on the IDs of image or icon nodes",
     {
-      fileKey: z.string().describe("The key of the Vextra file containing the node"),
+      fileKey: z.string().describe(
+        `The key of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/...
+        Or the file path of the local file, witch the extension is .vext. Local file path is start with file://...`
+      ),
       nodes: z
         .object({
           pageId: z

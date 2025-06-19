@@ -13,7 +13,7 @@ import { getRepoCreator, initDataModule } from "./init";
 
 export type DocumentProps = (
     { source: 'storage', storage: IO.IStorage, path: string, fid: string, versionId: string } |
-    { source: 'file', file: File, fmt: 'vext' | 'sketch' | 'fig' | 'moss' } |
+    { source: 'file', file: File | string, fmt: 'vext' | 'sketch' | 'fig' | 'moss' } |
     { source: 'new' })
 
 async function _open(props: DocumentProps, repoCreator: (data: Document, guard: TransactDataGuard) => Repo.IRepository) {

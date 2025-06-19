@@ -1,4 +1,4 @@
-import { Artboard, BoolShape, ContactShape, CutoutShape, GroupShape, ImageShape, LineShape, OvalShape, PathShape, PolygonShape, RectShape, ShapeType, StarShape, SymbolRefShape, SymbolShape, SymbolUnionShape, TableShape2, TextShape, Document as SourceDocument, Page as SourcePage, Shape as SourceShape } from "@kcdesign/data";
+import { Artboard, BoolShape, ContactShape, CutoutShape, GroupShape, ImageShape, LineShape, OvalShape, PathShape, PolygonShape, RectShape, ShapeType, StarShape, SymbolRefShape, SymbolShape, SymbolUnionShape, TableShape2, TextShape, Document as SourceDocument, Page as SourcePage, Shape as SourceShape, ShapeView, adapt2Shape } from "@kcdesign/data";
 import { Page, Shape } from "./types";
 import { exportArtboard, exportPage, exportGroupShape, exportRectShape, exportBoolShape, exportSymbolShape, exportTextShape, exportImageShape, exportContactShape, exportShape, exportCutoutShape, exportLineShape, exportOvalShape, exportPathShape, exportPolygonShape, exportStarShape, exportSymbolRefShape, exportSymbolUnionShape, exportTableShape2 } from "./export";
 
@@ -28,7 +28,8 @@ export async function serializeDocument(document: SourceDocument, depth?: number
     return new Document(document.name, _pages.map(page => exportPage(page, depth)));
 }
 
-export async function serializeNode(node: SourceShape, depth?: number): Promise<Shape> {
+export async function serializeNode(view: ShapeView, depth?: number): Promise<Shape> {
+    const node = adapt2Shape(view);
     switch (node.typeId) {
         case ShapeType.Artboard:
             return exportArtboard(node as Artboard, depth);

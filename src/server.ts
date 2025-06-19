@@ -229,7 +229,7 @@ export async function startServer(token: string): Promise<void> {
     const transport = new StdioServerTransport();
     await server.connect(transport);
   } else {
-    console.log(`Initializing Figma MCP Server in HTTP mode on port ${config.port}...`);
+    console.log(`Initializing Vextra MCP Server in HTTP mode on port ${config.port}...`);
     await startHttpServer(config.port, server);
   }
 }

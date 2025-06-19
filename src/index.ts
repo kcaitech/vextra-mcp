@@ -10,7 +10,7 @@
 
 
 export { IDocument } from './data/document';
-export { initDataModule } from './data/init';
+export { initModule } from './data/init';
 export { DocumentRemote } from './data/document_remote';
 export { DocumentLocal } from './data/document_local';
 

@@ -1,15 +1,17 @@
 import fs from "fs";
-import { serializeDocument, Document } from "./simplify/document";
-import { downloadFile, saveFile } from "@/utils/fetch-with-retry";
+import { serializeDocument, Document, serializeNode } from "./simplify/document";
+import { saveFile } from "@/utils/fetch-with-retry";
 import { Logger } from "@/utils/logger";
 import yaml from "js-yaml";
 import { IDocument } from "./data/document";
 import { DocumentRemote } from "./data/document_remote";
+import { Shape } from "./simplify/types";
+import { DocumentLocal } from "./data/document_local";
 
 type FetchImageParams = {
   pageId: string;
   /**
-   * The Node in Figma that will either be rendered or have its background image downloaded
+   * The Node in Vextra that will either be rendered or have its background image downloaded
    */
   nodeId: string;
   /**
@@ -45,7 +47,13 @@ export class VextraService {
     if (this.documentMap.has(fileKey)) {
       return this.documentMap.get(fileKey)!;
     }
-    const document = new DocumentRemote(this.oauthToken, fileKey);
+    let document: IDocument;
+    if (fileKey.startsWith("file://")) {
+      fileKey = fileKey.replace("file://", "/");
+      document = new DocumentLocal(fileKey);
+    } else {
+      document = new DocumentRemote(this.oauthToken, fileKey);
+    }
     await document.load();
     this.documentMap.set(fileKey, document);
     return document;
@@ -134,8 +142,8 @@ export class VextraService {
       if (!document) {
         throw new Error("Failed to get document");
       }
-      const simplifiedResponse = await serializeDocument(document.data());
-      writeLogs("figma-simplified.yml", simplifiedResponse);
+      const simplifiedResponse = await serializeDocument(document.data(), depth ?? undefined);
+
       return simplifiedResponse;
     } catch (e) {
       console.error("Failed to get file:", e);
@@ -144,7 +152,7 @@ export class VextraService {
   }
 
   // 获取单个节点
-  async getNode(fileKey: string, pageId: string, nodeId: string, depth?: number | null): Promise<SimplifiedDesign> {
+  async getNode(fileKey: string, pageId: string, nodeId: string, depth?: number | null): Promise<Shape> {
     const document = await this.getDocument(fileKey);
       if (!document) {
         throw new Error("Failed to get document");
@@ -154,8 +162,8 @@ export class VextraService {
       throw new Error("Failed to get node view");
     }
 
-    const simplifiedResponse = parseVextraViewNode(view);
-    writeLogs("figma-simplified.yml", simplifiedResponse);
+    const simplifiedResponse = await serializeNode(view, depth ?? undefined);
+
     return simplifiedResponse;
   }
 }
