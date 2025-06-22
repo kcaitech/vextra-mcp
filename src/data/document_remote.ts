@@ -8,7 +8,7 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { WSClient, HttpCode } from "./pal";
+import { WSClient, HttpCode } from '@kcdesign/kcserver-client';
 import { openDocument } from "./open";
 import { WS_URL } from "../config";
 import { IO, Document, layoutShape, DViewCtx, PageView, ShapeView, Repo } from "@kcdesign/data";
