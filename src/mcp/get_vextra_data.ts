@@ -63,7 +63,7 @@ const func = async ({ fileKey, pageId, nodeId, depth }: z.infer<typeof argsSchem
         const formattedResult =
             outputFormat === "json" ? JSON.stringify(result, null, 2) : yaml.dump(result);
 
-        Logger.log("Sending result to client", formattedResult);
+        Logger.log("Sending result to client");
         return {
             content: [{ type: "text" as const, text: formattedResult }],
         };
