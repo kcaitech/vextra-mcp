@@ -1,8 +1,0 @@
-{
-    "description": "winding rule",
-    "enum": [
-        "non-zero",
-        "even-odd"
-    ],
-    "default": "non-zero"
-}

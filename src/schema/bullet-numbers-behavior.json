@@ -1,8 +1,0 @@
-{
-    "description": "bullet & item number behavior",
-    "enum": [
-        "inherit",
-        "renew"
-    ],
-    "default": "inherit"
-}

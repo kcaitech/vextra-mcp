@@ -1,8 +1,0 @@
-{
-    "description": "contact role type",
-    "enum": [
-        "from",
-        "to"
-    ],
-    "default": "from"
-}

@@ -1,8 +1,0 @@
-{
-    "description": "fill rule",
-    "enum": [
-        "nonzero",
-        "evenodd"
-    ],
-    "default": "evenodd"
-}

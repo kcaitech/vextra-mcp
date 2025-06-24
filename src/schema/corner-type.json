@@ -1,9 +1,0 @@
-{
-    "description": "corner type",
-    "enum": [
-        "miter",
-        "bevel",
-        "round"
-    ],
-    "default": "right"
-}

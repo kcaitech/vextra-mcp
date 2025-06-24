@@ -1,8 +1,0 @@
-{
-  "description": "guide axis",
-  "enum": [
-    "X",
-    "Y"
-  ],
-  "default": "X"
-}

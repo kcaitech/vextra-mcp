@@ -1,8 +1,0 @@
-{
-    "description": "stack wrap",
-    "enum": [
-        "wrap",
-        "no-wrap"
-    ],
-    "default": "wrap"
-}

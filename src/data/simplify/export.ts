@@ -8,7 +8,6 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-/* 代码生成，勿手动修改 */
 import { types } from "@kcdesign/data"
 import * as resultTypes from "./types"
 export function exportArtboard_guides(source: types.Artboard_guides, depth?: number): resultTypes.Artboard_guides {
@@ -44,7 +43,7 @@ export function exportBorderStyle(source: types.BorderStyle, depth?: number): re
 export function exportBorder_strokePaints(source: types.Border_strokePaints, depth?: number): resultTypes.Border_strokePaints {
     const ret: resultTypes.Border_strokePaints = []
     source.forEach((source) => {
-        ret.push(exportFill(source, depth))
+        if (source.isEnabled) ret.push(exportFill(source, depth))
     })
     return ret
 }
@@ -76,12 +75,11 @@ export function exportColorControls(source: types.ColorControls, depth?: number)
 }
 /* color */
 export function exportColor(source: types.Color, depth?: number): resultTypes.Color {
-    const ret: resultTypes.Color = {} as resultTypes.Color
-    ret.alpha = source.alpha
-    ret.red = source.red
-    ret.green = source.green
-    ret.blue = source.blue
-    return ret
+    const r = Math.round(source.red * 255);
+    const g = Math.round(source.green * 255);
+    const b = Math.round(source.blue * 255);
+    const a = Math.round(source.alpha * 100) / 100;
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 /* contact role type */
 export function exportContactRoleType(source: types.ContactRoleType, depth?: number): resultTypes.ContactRoleType {
@@ -192,6 +190,7 @@ export function exportGraphicsContextSettings(source: types.GraphicsContextSetti
 export function exportGroupShape_childs(source: types.GroupShape_childs, depth?: number): resultTypes.GroupShape_childs {
     const ret: resultTypes.GroupShape_childs = []
     source.forEach((source) => {
+        if (!source.isVisible) return; // 不可见的不输出
         ret.push((() => {
             if (typeof source !== "object") {
                 return source
@@ -400,14 +399,15 @@ export function exportPathShape2_pathsegs(source: types.PathShape2_pathsegs, dep
 }
 /* pattern transform */
 export function exportPatternTransform(source: types.PatternTransform, depth?: number): resultTypes.PatternTransform {
-    const ret: resultTypes.PatternTransform = {} as resultTypes.PatternTransform
-    ret.m00 = source.m00
-    ret.m01 = source.m01
-    ret.m02 = source.m02
-    ret.m10 = source.m10
-    ret.m11 = source.m11
-    ret.m12 = source.m12
-    return ret
+    // const ret: resultTypes.PatternTransform = {} as resultTypes.PatternTransform
+    // ret.m00 = source.m00
+    // ret.m01 = source.m01
+    // ret.m02 = source.m02
+    // ret.m10 = source.m10
+    // ret.m11 = source.m11
+    // ret.m12 = source.m12
+    // return ret
+    return 'matrix(' + [source.m00, source.m10, source.m01, source.m11, source.m02, source.m12].join(',') + ')';
 }
 /* point 2d */
 export function exportPoint2D(source: types.Point2D, depth?: number): resultTypes.Point2D {
@@ -672,14 +672,15 @@ export function exportText_paras(source: types.Text_paras, depth?: number): resu
 }
 /* transform */
 export function exportTransform(source: types.Transform, depth?: number): resultTypes.Transform {
-    const ret: resultTypes.Transform = {} as resultTypes.Transform
-    ret.m00 = source.m00
-    ret.m01 = source.m01
-    ret.m02 = source.m02
-    ret.m10 = source.m10
-    ret.m11 = source.m11
-    ret.m12 = source.m12
-    return ret
+    // const ret: resultTypes.Transform = {} as resultTypes.Transform
+    // ret.m00 = source.m00
+    // ret.m01 = source.m01
+    // ret.m02 = source.m02
+    // ret.m10 = source.m10
+    // ret.m11 = source.m11
+    // ret.m12 = source.m12
+    // return ret
+    return 'matrix(' + [source.m00, source.m10, source.m01, source.m11, source.m02, source.m12].join(',') + ')';
 }
 /* underline types */
 export function exportUnderlineType(source: types.UnderlineType, depth?: number): resultTypes.UnderlineType {
@@ -912,8 +913,6 @@ export function exportBorderMask(source: types.BorderMask, depth?: number): resu
 /* fill */
 export function exportFill(source: types.Fill, depth?: number): resultTypes.Fill {
     const ret: resultTypes.Fill = {} as resultTypes.Fill
-    ret.id = source.id
-    ret.isEnabled = source.isEnabled
     ret.fillType = exportFillType(source.fillType, depth)
     ret.color = exportColor(source.color, depth)
     if (source.contextSettings !== undefined) ret.contextSettings = exportContextSettings(source.contextSettings, depth)

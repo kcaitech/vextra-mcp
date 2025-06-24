@@ -1,9 +1,0 @@
-{
-    "description": "gradient type",
-    "enum": [
-        "linear",
-        "radial",
-        "angular"
-    ],
-    "default": "linear"
-}

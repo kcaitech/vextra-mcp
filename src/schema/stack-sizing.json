@@ -1,8 +1,0 @@
-{
-    "description": "stack sizing",
-    "enum": [
-        "fixed",
-        "auto"
-    ],
-    "default": "fixed"
-}

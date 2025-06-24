@@ -8,7 +8,6 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-/* 代码生成，勿手动修改 */
 export {
     BlendMode,
     BlurType,

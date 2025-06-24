@@ -127,6 +127,7 @@ export async function startHttpServer(port: number, mcpServer: McpServer): Promi
     Logger.log("Establishing new SSE connection");
     const transport = new SSEServerTransport("/messages", res);
     Logger.log(`New SSE connection established for sessionId ${transport.sessionId}`);
+    Logger.log("/sse request query:", req.query);
     Logger.log("/sse request headers:", req.headers);
     Logger.log("/sse request body:", req.body);
 

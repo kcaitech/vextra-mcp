@@ -1,8 +1,0 @@
-{
-    "description": "stack positioning",
-    "enum": [
-        "AUTO",
-        "ABSOLUTE"
-    ],
-    "default": "AUTO"
-}

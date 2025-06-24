@@ -1,8 +1,0 @@
-{
-    "description": "text orientation",
-    "enum": [
-        "horizontal",
-        "vertical"
-    ],
-    "default": "horizontal"
-}

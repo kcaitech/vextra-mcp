@@ -1,7 +1,0 @@
-{
-    "description": "crdtidx",
-    "type": "array",
-    "items": {
-        "type": "number"
-    }
-}

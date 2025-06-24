@@ -8,7 +8,6 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-/* 代码生成，勿手动修改 */
 export type Artboard_guides = Array<Guide>
 /* blend mode */
 export enum BlendMode {
@@ -85,12 +84,13 @@ export type ColorControls = {
     saturation: number,
 }
 /* color */
-export type Color = {
-    alpha: number,
-    red: number,
-    green: number,
-    blue: number,
-}
+// export type Color = {
+//     alpha: number,
+//     red: number,
+//     green: number,
+//     blue: number,
+// }
+export type Color = string
 /* contact role type */
 export enum ContactRoleType {
     From = "from",
@@ -338,14 +338,15 @@ export type PathSegment = {
 export type PathShape_pathsegs = Array<PathSegment>
 export type PathShape2_pathsegs = Array<PathSegment>
 /* pattern transform */
-export type PatternTransform = {
-    m00: number,
-    m01: number,
-    m02: number,
-    m10: number,
-    m11: number,
-    m12: number,
-}
+// export type PatternTransform = {
+//     m00: number,
+//     m01: number,
+//     m02: number,
+//     m10: number,
+//     m11: number,
+//     m12: number,
+// }
+export type PatternTransform = string
 /* point 2d */
 export type Point2D = {
     x: number,
@@ -616,14 +617,15 @@ export enum TextVerAlign {
 }
 export type Text_paras = Array<Para>
 /* transform */
-export type Transform = {
-    m00: number,
-    m01: number,
-    m02: number,
-    m10: number,
-    m11: number,
-    m12: number,
-}
+// export type Transform = {
+//     m00: number,
+//     m01: number,
+//     m02: number,
+//     m10: number,
+//     m11: number,
+//     m12: number,
+// }
+export type Transform = string
 /* underline types */
 export enum UnderlineType {
     None = "none",
@@ -828,8 +830,6 @@ export type BorderMask = {
 }
 /* fill */
 export type Fill = {
-    id: string,
-    isEnabled: boolean,
     fillType: FillType,
     color: Color,
     contextSettings?: ContextSettings,
