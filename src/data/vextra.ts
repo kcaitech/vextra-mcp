@@ -115,16 +115,30 @@ export class VextraService {
   ): Promise<string[]> {
     const document = await this.getDocument(fileKey);
 
-    // 使用 skia-canvas 库创建 canvas
-    const tempCanvas = new Canvas(1000, 1000);
-    const tempCtx = tempCanvas.getContext('2d');
-
+    
     const result: Map<string, string> = new Map();
     // 获取所有节点
     const tasks = nodes.map(async (node) => {
       const view = await document.getNodeView(node.nodeId, node.pageId);
       if (!view) return;
       if (node.fileType === 'png') {
+        // 使用 skia-canvas 库创建 canvas
+        const size = view.size;
+        console.log("size", size, pngScale);
+        let width = size.width * pngScale;
+        let height = size.height * pngScale;
+
+        if (width <= 0 || height <= 0) return;
+        const max_size = 4096
+        if (width > max_size || height > max_size) {
+          // 等比缩小到4k大小
+          const scale = Math.min(max_size / width, max_size / height);
+          width = Math.floor(width * scale);
+          height = Math.floor(height * scale);
+        }
+
+        const tempCanvas = new Canvas(width, height);
+        const tempCtx = tempCanvas.getContext('2d');
         view.ctx.setCanvas(tempCtx as any) // 
         view.render('Canvas'); // render to png
         // 使用 skia-canvas 的 png 属性生成 PNG
