@@ -22,12 +22,12 @@ let _text2path = text2path;
 let _repoCreator = createRepo;
 
 
-export function initModule(measure?: typeof _measure, text2path?: typeof _text2path, repoCreator?: typeof createRepo) {
-    // if (!measure || !text2path) throw new Error('measure or text2path is undefined')
-    if (measure) _measure = measure;
-    if (text2path) _text2path = text2path;
-    if (repoCreator) _repoCreator = repoCreator;
-}
+// export function initModule(measure?: typeof _measure, text2path?: typeof _text2path, repoCreator?: typeof createRepo) {
+//     // if (!measure || !text2path) throw new Error('measure or text2path is undefined')
+//     if (measure) _measure = measure;
+//     if (text2path) _text2path = text2path;
+//     if (repoCreator) _repoCreator = repoCreator;
+// }
 
 export async function initDataModule() {
     if (__inited) return;
