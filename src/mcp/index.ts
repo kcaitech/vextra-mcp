@@ -2,6 +2,7 @@ import { VextraService } from "@/data/vextra";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as get_vextra_data from "./get_vextra_data";
 import * as get_vextra_images from "./get_vextra_images";
+import * as get_vextra_pagesinfo from "./get_vextra_pagesinfo";
 import { Logger } from "@/utils/logger";
 
 function registerTools(
@@ -15,6 +16,9 @@ function registerTools(
 
     // get_vextra_images
     get_vextra_images.registTools(server, vextraService);
+
+    // get_vextra_pagesinfo
+    get_vextra_pagesinfo.registTools(server, vextraService, outputFormat);
   }
 
   const serverInfo = {

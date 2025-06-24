@@ -947,6 +947,7 @@ export class Variable {
 /* shape */
 export class Shape {
     typeId = "shape"
+    id: string
     name: string
     type: ShapeType
     transform: Transform
@@ -974,7 +975,8 @@ export class Shape {
     mask?: boolean
     stackPositioning?: StackPositioning
     radiusMask?: string
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style) {
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style) {
+        this.id = id
         this.name = name
         this.type = type
         this.transform = transform
@@ -992,8 +994,8 @@ export class SymbolRefShape extends Shape {
     cornerRadius?: CornerRadius
     innerEnvScale?: number
     uniformScale?: number
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, refId: string, variables: Map<string, Variable>) {
-        super(name, type, transform, style)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, refId: string, variables: Map<string, Variable>) {
+        super(id, name, type, transform, style)
         this.size = size
         this.refId = refId
         this.variables = variables
@@ -1005,8 +1007,8 @@ export class TextShape extends Shape {
     size: ShapeSize
     text: Text
     fixedRadius?: number
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, text: Text) {
-        super(name, type, transform, style)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, text: Text) {
+        super(id, name, type, transform, style)
         this.size = size
         this.text = text
     }
@@ -1039,8 +1041,8 @@ export class PathShape extends Shape {
     size: ShapeSize
     pathsegs: PathShape_pathsegs
     fixedRadius?: number
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs) {
-        super(name, type, transform, style)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs) {
+        super(id, name, type, transform, style)
         this.size = size
         this.pathsegs = pathsegs
     }
@@ -1051,8 +1053,8 @@ export class PathShape2 extends Shape {
     size: ShapeSize
     pathsegs: PathShape2_pathsegs
     fixedRadius?: number
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape2_pathsegs) {
-        super(name, type, transform, style)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape2_pathsegs) {
+        super(id, name, type, transform, style)
         this.size = size
         this.pathsegs = pathsegs
     }
@@ -1061,8 +1063,8 @@ export class PathShape2 extends Shape {
 export class PolygonShape extends PathShape {
     typeId = "polygon-shape"
     counts: number
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, counts: number = 3) {
-        super(name, type, transform, style, size, pathsegs)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, counts: number = 3) {
+        super(id, name, type, transform, style, size, pathsegs)
         this.counts = counts
     }
 }
@@ -1075,8 +1077,8 @@ export class StarShape extends PathShape {
     typeId = "star-shape"
     counts: number
     innerAngle: number
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, counts: number = 5, innerAngle: number = 0.382) {
-        super(name, type, transform, style, size, pathsegs)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, counts: number = 5, innerAngle: number = 0.382) {
+        super(id, name, type, transform, style, size, pathsegs)
         this.counts = counts
         this.innerAngle = innerAngle
     }
@@ -1087,8 +1089,8 @@ export class Connection extends PathShape {
     isEdited: boolean
     from?: ContactForm
     to?: ContactForm
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, isEdited: boolean) {
-        super(name, type, transform, style, size, pathsegs)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, isEdited: boolean) {
+        super(id, name, type, transform, style, size, pathsegs)
         this.isEdited = isEdited
     }
 }
@@ -1100,8 +1102,8 @@ export class ContactShape extends PathShape {
     mark: boolean
     from?: ContactForm
     to?: ContactForm
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, isEdited: boolean, text: Text, mark: boolean) {
-        super(name, type, transform, style, size, pathsegs)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, isEdited: boolean, text: Text, mark: boolean) {
+        super(id, name, type, transform, style, size, pathsegs)
         this.isEdited = isEdited
         this.text = text
         this.mark = mark
@@ -1115,8 +1117,8 @@ export class CutoutShape extends PathShape {
 export class ImageShape extends PathShape {
     typeId = "image-shape"
     imageRef: string
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, imageRef: string) {
-        super(name, type, transform, style, size, pathsegs)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, imageRef: string) {
+        super(id, name, type, transform, style, size, pathsegs)
         this.imageRef = imageRef
     }
 }
@@ -1131,8 +1133,8 @@ export class OvalShape extends PathShape {
     startingAngle?: number
     endingAngle?: number
     innerRadius?: number
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, ellipse: Ellipse) {
-        super(name, type, transform, style, size, pathsegs)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, size: ShapeSize, pathsegs: PathShape_pathsegs, ellipse: Ellipse) {
+        super(id, name, type, transform, style, size, pathsegs)
         this.ellipse = ellipse
     }
 }
@@ -1141,8 +1143,8 @@ export class GroupShape extends Shape {
     typeId = "group-shape"
     childs: GroupShape_childs
     fixedRadius?: number
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs) {
-        super(name, type, transform, style)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs) {
+        super(id, name, type, transform, style)
         this.childs = childs
     }
 }
@@ -1156,7 +1158,6 @@ export class Page extends GroupShape {
 /* symbol shape */
 export class SymbolShape extends GroupShape {
     typeId = "symbol-shape"
-    id: string
     size: ShapeSize
     variables: Map<string, Variable>
     symtags?: Map<string, string>
@@ -1164,9 +1165,8 @@ export class SymbolShape extends GroupShape {
     guides?: SymbolShape_guides
     autoLayout?: AutoLayout
     frameMaskDisabled?: boolean
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs, id: string, size: ShapeSize, variables: Map<string, Variable>) {
-        super(name, type, transform, style, childs)
-        this.id = id
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs, size: ShapeSize, variables: Map<string, Variable>) {
+        super(id, name, type, transform, style, childs)
         this.size = size
         this.variables = variables
     }
@@ -1183,8 +1183,8 @@ export class Artboard extends GroupShape {
     guides?: Artboard_guides
     autoLayout?: AutoLayout
     frameMaskDisabled?: boolean
-    constructor(name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs, size: ShapeSize) {
-        super(name, type, transform, style, childs)
+    constructor(id: string, name: string, type: ShapeType, transform: Transform, style: Style, childs: GroupShape_childs, size: ShapeSize) {
+        super(id, name, type, transform, style, childs)
         this.size = size
     }
 }

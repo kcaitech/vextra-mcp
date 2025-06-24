@@ -935,6 +935,7 @@ export type Variable = {
 }
 /* shape */
 export type Shape = {
+    id: string,
     name: string,
     type: ShapeType,
     transform: Transform,
@@ -1067,7 +1068,6 @@ export type Page = GroupShape & {
 }
 /* symbol shape */
 export type SymbolShape = GroupShape & {
-    id: string,
     size: ShapeSize,
     variables: Map<string, Variable>,
     symtags?: Map<string, string>,

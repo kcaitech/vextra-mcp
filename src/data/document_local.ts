@@ -59,6 +59,9 @@ export class DocumentLocal implements IDocument {
         if (!this.repo) throw new Error('文件未加载');
         if (!this.document) throw new Error('文件未加载');
         const pageView = await this.getPageView(pageId);
+        if (nodeId === pageId) {
+            return pageView;
+        }
         return pageView?.getView(nodeId)
     }
 }

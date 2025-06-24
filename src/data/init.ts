@@ -9,7 +9,7 @@
  */
 
 import { measure } from "./measure";
-import { text2path } from "@kcaitech/text2path";
+import { text2path } from "./text2path";
 import { initModule as initData, Repo, TransactDataGuard, Document } from '@kcdesign/data';
 
 function createRepo(data: Document, guard: TransactDataGuard): Repo.IRepository {

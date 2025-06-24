@@ -2,9 +2,6 @@
     "description": "symbol shape",
     "type": "object",
     "properties": {
-        "id": {
-            "type": "string"
-        },
         "size": {
             "$ref": "./shape-size.json"
         },
@@ -43,7 +40,6 @@
         }
     },
     "required": [
-        "id",
         "size",
         "variables"
     ],

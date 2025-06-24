@@ -12,6 +12,7 @@ const description = `
 Obtain the layout information about the entire Vextra/Figma/Sketch/Moss file.
 Note that when the file size is large, the retrieved document content may be too much and exceed the model's context length, causing the model to fail to process it.
 In this case, you can consider retrieving shallower level object data by passing the depth parameter to control the depth of the retrieved levels.
+You can use the get_vextra_pagesinfo tool to get file page information, then determine whether to pass the depth parameter based on the page information.
 `
 
 const argsSchema = z.object({

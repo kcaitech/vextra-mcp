@@ -7,6 +7,7 @@ import { DocumentRemote } from "./document_remote";
 import { Shape } from "./simplify/types";
 import { DocumentLocal } from "./document_local";
 import path from "path";
+import { Canvas } from "skia-canvas";
 
 function saveFile(
   fileName: string,
@@ -114,9 +115,9 @@ export class VextraService {
   ): Promise<string[]> {
     const document = await this.getDocument(fileKey);
 
-    // todo size
-    const tempCanvas = new OffscreenCanvas(1000, 1000);
-    const tempCtx = tempCanvas.getContext('2d')!;
+    // 使用 skia-canvas 库创建 canvas
+    const tempCanvas = new Canvas(1000, 1000);
+    const tempCtx = tempCanvas.getContext('2d');
 
     const result: Map<string, string> = new Map();
     // 获取所有节点
@@ -124,14 +125,13 @@ export class VextraService {
       const view = await document.getNodeView(node.nodeId, node.pageId);
       if (!view) return;
       if (node.fileType === 'png') {
-        view.ctx.setCanvas(tempCtx)
+        view.ctx.setCanvas(tempCtx as any) // 
         view.render('Canvas'); // render to png
-        // 转换为PNG blob
-        const blob = await tempCanvas.convertToBlob({ type: 'image/png' });
-        const buffer = await blob.arrayBuffer();
+        // 使用 skia-canvas 的 png 属性生成 PNG
+        const buffer = await tempCanvas.png;
 
         // 保存为PNG文件
-        const path = saveFile(node.fileName, localPath, Buffer.from(buffer));
+        const path = saveFile(node.fileName, localPath, buffer);
         result.set(node.nodeId, path);
       }
       else if (node.fileType === 'svg') {
@@ -145,8 +145,8 @@ export class VextraService {
     await Promise.all(tasks);
 
     const downloads = nodes.map(({ nodeId }) => {
-        return result.get(nodeId);
-      });
+      return result.get(nodeId);
+    });
 
     return downloads.filter((url) => !!url) as string[];
   }
@@ -170,9 +170,9 @@ export class VextraService {
   // 获取单个节点
   async getNode(fileKey: string, pageId: string, nodeId: string, depth?: number | null): Promise<Shape> {
     const document = await this.getDocument(fileKey);
-      if (!document) {
-        throw new Error("Failed to get document");
-      }
+    if (!document) {
+      throw new Error("Failed to get document");
+    }
     const view = await document.getNodeView(nodeId, pageId);
     if (!view) {
       throw new Error("Failed to get node view");
@@ -182,26 +182,18 @@ export class VextraService {
 
     return simplifiedResponse;
   }
-}
 
-function writeLogs(name: string, value: any) {
-  try {
-    if (process.env.NODE_ENV !== "development") return;
-
-    const logsDir = "logs";
-
-    try {
-      fs.accessSync(process.cwd(), fs.constants.W_OK);
-    } catch (error) {
-      Logger.log("Failed to write logs:", error);
-      return;
-    }
-
-    if (!fs.existsSync(logsDir)) {
-      fs.mkdirSync(logsDir);
-    }
-    fs.writeFileSync(`${logsDir}/${name}`, yaml.dump(value));
-  } catch (error) {
-    console.debug("Failed to write logs:", error);
+  async getPageInfos(fileKey: string): Promise<{ id: string, name: string, nodeCount: number }[]> {
+    const document = await this.getDocument(fileKey);
+    const pages = document.data().pagesList.map(page => document.getNodeView(page.id, page.id));
+    const pageViews = await Promise.all(pages);
+    const pageInfos = pageViews.filter(page => page !== undefined).map(page => {
+      return {
+        id: page.id,
+        name: page.name,
+        nodeCount: page.nodeCount,
+      }
+    });
+    return pageInfos;
   }
 }

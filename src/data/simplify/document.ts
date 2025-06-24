@@ -1,7 +1,7 @@
 import { Artboard, BoolShape, ContactShape, CutoutShape, 
     GroupShape, ImageShape, LineShape, OvalShape, PathShape, 
     PolygonShape, RectShape, ShapeType, StarShape, SymbolRefShape, SymbolShape, 
-    SymbolUnionShape, TableShape2, TextShape, Document as SourceDocument, 
+    SymbolUnionShape, TextShape, Document as SourceDocument, 
     Page as SourcePage, Shape as SourceShape, ShapeView, adapt2Shape } from "@kcdesign/data";
 import { Page, Shape } from "./types";
 import { exportArtboard, exportPage, exportGroupShape, exportRectShape, 
@@ -19,7 +19,6 @@ export class Document {
         this.pages = pages;
     }
 }
-
 
 export async function serializeDocument(document: SourceDocument, depth?: number): Promise<Document> {
 

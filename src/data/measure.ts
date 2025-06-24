@@ -18,22 +18,28 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { Canvas } from 'skia-canvas';
+
 // https://zhuanlan.zhihu.com/p/338634062
 const canvas2D = (() => {
-    let canvas: CanvasRenderingContext2D | null;
+    let context: any | null;
     return () => {
-        return canvas || (canvas = document.createElement("canvas").getContext("2d"));
+        if (!context) {
+            const canvas = new Canvas(200, 200);
+            context = canvas.getContext('2d');
+        }
+        return context;
     }
 })();
 
 function measureText(text: string, font: string): TextMetrics | undefined {
     // re-use canvas object for better performance
-    const context: CanvasRenderingContext2D | null = canvas2D();
+    const context: any | null = canvas2D();
     if (context) {
         context.font = font;
         context.textAlign = 'left'
         context.textBaseline = 'alphabetic'
-        const metrics: TextMetrics = context.measureText(text);
+        const metrics = context.measureText(text) as TextMetrics;
         return metrics;
     }
     return undefined;

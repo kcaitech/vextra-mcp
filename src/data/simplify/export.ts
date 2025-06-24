@@ -1082,6 +1082,7 @@ export function exportVariable(source: types.Variable, depth?: number): resultTy
 /* shape */
 export function exportShape(source: types.Shape, depth?: number): resultTypes.Shape {
     const ret: resultTypes.Shape = {} as resultTypes.Shape
+    ret.id = source.id
     ret.name = source.name
     ret.type = exportShapeType(source.type, depth)
     ret.transform = exportTransform(source.transform, depth)
@@ -1283,7 +1284,6 @@ export function exportPage(source: types.Page, depth?: number): resultTypes.Page
 /* symbol shape */
 export function exportSymbolShape(source: types.SymbolShape, depth?: number): resultTypes.SymbolShape {
     const ret: resultTypes.SymbolShape = exportGroupShape(source, depth) as resultTypes.SymbolShape
-    ret.id = source.id
     ret.size = exportShapeSize(source.size, depth)
     ret.variables = (() => {
         const ret: any = {}

@@ -9,7 +9,6 @@ const external = [
     'winston',
     'axios',
     'qs',
-    '@kcaitech/text2path',
     '@kcdesign/data',
     '@aws-sdk/client-s3',
     'ali-oss',

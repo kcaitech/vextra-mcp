@@ -16,7 +16,6 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.797.0",
-    "@kcaitech/text2path": "^1.0.0",
     "@kcdesign/data": "file:../kcdesign-data",
     "@kcdesign/kcserver-client": "file:../kcserver/client",
     "@modelcontextprotocol/sdk": "^1.12.1",
@@ -26,6 +25,7 @@
     "js-yaml": "^4.1.0",
     "path-to-regexp": "^8.2.0",
     "remeda": "^2.23.0",
+    "skia-canvas": "^2.0.2",
     "winston": "^3.17.0",
     "yargs": "^18.0.0",
     "zod": "^3.25.61"
