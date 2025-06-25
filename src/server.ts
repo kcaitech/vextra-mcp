@@ -1,11 +1,9 @@
-import { randomUUID } from "node:crypto";
-import express, { type Request, type Response } from "express";
+import express, {  } from "express";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { Server } from "http";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { Logger } from "./utils/logger.js";
+import { Logger } from "./middlewares/logger.js";
 
 
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -15,122 +13,17 @@ import yargs from "yargs";
 
 let httpServer: Server | null = null;
 const transports = {
-  streamable: {} as Record<string, StreamableHTTPServerTransport>,
+  // streamable: {} as Record<string, StreamableHTTPServerTransport>,
   sse: {} as Record<string, SSEServerTransport>,
 };
 
 export async function startHttpServer(port: number, mcpServer: McpServer): Promise<void> {
   const app = express();
 
-  // Parse JSON requests for the Streamable HTTP endpoint only, will break SSE endpoint
-  app.use("/mcp", express.json());
-
-  // Modern Streamable HTTP endpoint
-  app.post("/mcp", async (req, res) => {
-    Logger.log("Received StreamableHTTP request");
-    const sessionId = req.headers["mcp-session-id"] as string | undefined;
-
-    let transport: StreamableHTTPServerTransport;
-
-    if (sessionId && transports.streamable[sessionId]) {
-      // Reuse existing transport
-      Logger.log("Reusing existing StreamableHTTP transport for sessionId", sessionId);
-      transport = transports.streamable[sessionId];
-    } else if (!sessionId && isInitializeRequest(req.body)) {
-      Logger.log("New initialization request for StreamableHTTP sessionId", sessionId);
-      transport = new StreamableHTTPServerTransport({
-        sessionIdGenerator: () => randomUUID(),
-        onsessioninitialized: (sessionId) => {
-          // Store the transport by session ID
-          transports.streamable[sessionId] = transport;
-        },
-      });
-      transport.onclose = () => {
-        if (transport.sessionId) {
-          delete transports.streamable[transport.sessionId];
-        }
-      };
-      // TODO? There semes to be an issue—at least in Cursor—where after a connection is made to an HTTP Streamable endpoint, SSE connections to the same Express server fail with "Received a response for an unknown message ID"
-      await mcpServer.connect(transport);
-    } else {
-      // Invalid request
-      Logger.log("Invalid request:", req.body);
-      res.status(400).json({
-        jsonrpc: "2.0",
-        error: {
-          code: -32000,
-          message: "Bad Request: No valid session ID provided",
-        },
-        id: null,
-      });
-      return;
-    }
-
-    let progressInterval: NodeJS.Timeout | null = null;
-    const progressToken = req.body.params?._meta?.progressToken;
-    // Logger.log("Progress token:", progressToken);
-    let progress = 0;
-    if (progressToken) {
-      Logger.log(
-        `Setting up progress notifications for token ${progressToken} on session ${sessionId}`,
-      );
-      progressInterval = setInterval(async () => {
-        Logger.log("Sending progress notification", progress);
-        await mcpServer.server.notification({
-          method: "notifications/progress",
-          params: {
-            progress,
-            progressToken,
-          },
-        });
-        progress++;
-      }, 1000);
-    }
-
-    Logger.log("Handling StreamableHTTP request");
-    await transport.handleRequest(req, res, req.body);
-
-    if (progressInterval) {
-      clearInterval(progressInterval);
-    }
-    Logger.log("StreamableHTTP request handled");
-  });
-
-  // Handle GET requests for SSE streams (using built-in support from StreamableHTTP)
-  const handleSessionRequest = async (req: Request, res: Response) => {
-    const sessionId = req.headers["mcp-session-id"] as string | undefined;
-    if (!sessionId || !transports.streamable[sessionId]) {
-      res.status(400).send("Invalid or missing session ID");
-      return;
-    }
-
-    console.log(`Received session termination request for session ${sessionId}`);
-
-    try {
-      const transport = transports.streamable[sessionId];
-      await transport.handleRequest(req, res);
-    } catch (error) {
-      console.error("Error handling session termination:", error);
-      if (!res.headersSent) {
-        res.status(500).send("Error processing session termination");
-      }
-    }
-  };
-
-  // Handle GET requests for server-to-client notifications via SSE
-  app.get("/mcp", handleSessionRequest);
-
-  // Handle DELETE requests for session termination
-  app.delete("/mcp", handleSessionRequest);
+  app.use(Logger);
 
   app.get("/sse", async (req, res) => {
-    Logger.log("Establishing new SSE connection");
     const transport = new SSEServerTransport("/messages", res);
-    Logger.log(`New SSE connection established for sessionId ${transport.sessionId}`);
-    Logger.log("/sse request query:", req.query);
-    Logger.log("/sse request headers:", req.headers);
-    Logger.log("/sse request body:", req.body);
-
     transports.sse[transport.sessionId] = transport;
     res.on("close", () => {
       delete transports.sse[transport.sessionId];
@@ -143,9 +36,6 @@ export async function startHttpServer(port: number, mcpServer: McpServer): Promi
     const sessionId = req.query.sessionId as string;
     const transport = transports.sse[sessionId];
     if (transport) {
-      Logger.log(`Received SSE message for sessionId ${sessionId}`);
-      Logger.log("/messages request headers:", req.headers);
-      Logger.log("/messages request body:", req.body);
       await transport.handlePostMessage(req, res);
     } else {
       res.status(400).send(`No transport found for sessionId ${sessionId}`);
@@ -154,20 +44,20 @@ export async function startHttpServer(port: number, mcpServer: McpServer): Promi
   });
 
   httpServer = app.listen(port, () => {
-    Logger.log(`HTTP server listening on port ${port}`);
-    Logger.log(`SSE endpoint available at http://localhost:${port}/sse`);
-    Logger.log(`Message endpoint available at http://localhost:${port}/messages`);
-    Logger.log(`StreamableHTTP endpoint available at http://localhost:${port}/mcp`);
+    console.log(`HTTP server listening on port ${port}`);
+    console.log(`SSE endpoint available at http://localhost:${port}/sse`);
+    console.log(`Message endpoint available at http://localhost:${port}/messages`);
+    // console.log(`StreamableHTTP endpoint available at http://localhost:${port}/mcp`);
   });
 
   process.on("SIGINT", async () => {
-    Logger.log("Shutting down server...");
+    console.log("Shutting down server...");
 
     // Close all active transports to properly clean up resources
     await closeTransports(transports.sse);
-    await closeTransports(transports.streamable);
+    // await closeTransports(transports.streamable);
 
-    Logger.log("Server shutdown complete");
+    console.log("Server shutdown complete");
     process.exit(0);
   });
 }
@@ -212,22 +102,21 @@ export async function startServer(token: string): Promise<void> {
   // Check if we're running in stdio mode (e.g., via CLI)
   const isStdioMode = process.env.NODE_ENV === "cli" || process.argv.includes("--stdio");
 
-  const config =  {
+  const config = {
     auth: token,
     outputFormat: "yaml" as "yaml" | "json",
     port: 80,
   }
 
-  const server = createServer(config.auth, { 
-    isHTTP: !isStdioMode, 
-    outputFormat: config.outputFormat 
+  const server = createServer(config.auth, {
+    isHTTP: !isStdioMode,
+    outputFormat: config.outputFormat
   });
 
   if (isStdioMode) {
     const transport = new StdioServerTransport();
     await server.connect(transport);
   } else {
-    console.log(`Initializing Vextra MCP Server in HTTP mode on port ${config.port}...`);
     await startHttpServer(config.port, server);
   }
 }

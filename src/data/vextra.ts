@@ -1,7 +1,5 @@
 import fs from "fs";
 import { serializeDocument, Document, serializeNode } from "./simplify/document";
-import { Logger } from "@/utils/logger";
-import yaml from "js-yaml";
 import { IDocument } from "./document";
 import { DocumentRemote } from "./document_remote";
 import { Shape } from "./simplify/types";

@@ -8,26 +8,11 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { createLogger, format, transports } from 'winston';
+
 import { Request, Response, NextFunction } from 'express';
 
-const logger = createLogger({
-  level: 'info',
-  format: format.combine(
-    format.timestamp(),
-    format.printf(({ timestamp, level, message }) => {
-      return `${timestamp} [${level}]: ${message}`;
-    })
-  ),
-  transports: [
-    new transports.Console(),
-    new transports.File({ filename: 'logs/app.log' })
-  ],
-});
-
-export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
-  logger.info(`${req.method} ${req.url}`);
+// 基础请求日志记录
+export const Logger = (req: Request, res: Response, next: NextFunction) => {
+  console.info(`${req.method} ${req.url}`);
   next();
 };
-
-export default logger;

@@ -3,7 +3,6 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as get_vextra_data from "./get_vextra_data";
 import * as get_vextra_images from "./get_vextra_images";
 import * as get_vextra_pagesinfo from "./get_vextra_pagesinfo";
-import { Logger } from "@/utils/logger";
 
 function registerTools(
     server: McpServer,
@@ -38,8 +37,6 @@ function registerTools(
     const server = new McpServer(serverInfo);
     const vextraService = new VextraService(vextraOAuthToken);
     registerTools(server, vextraService, outputFormat);
-  
-    Logger.isHTTP = isHTTP;
   
     return server;
   }

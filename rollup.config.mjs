@@ -6,7 +6,6 @@ import clear from 'rollup-plugin-clear';
 
 const external = [
     'express',
-    'winston',
     'axios',
     'qs',
     '@kcdesign/data',

@@ -1,4 +1,4 @@
-import { Logger } from "@/utils/logger";
+
 import { VextraService } from "@/data/vextra";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
@@ -110,15 +110,11 @@ const func = async ({ fileKey, nodes, localPath, svgOptions, pngScale }: z.infer
             ...r,
         ]);
 
-        // If any download fails, return false
-        // const saveSuccess = !downloads.find((success) => !success);
-        console.log("get_vextra_images", downloads);
-
         const result = {
             success_images: downloads.filter((success) => !!success),
             failed_images: downloads.filter((success) => !success),
         }
-
+        console.log("Sending result to client");
         const formattedResult =
             outputFormat === "json" ? JSON.stringify(result, null, 2) : yaml.dump(result);
         return {
@@ -130,7 +126,7 @@ const func = async ({ fileKey, nodes, localPath, svgOptions, pngScale }: z.infer
             ],
         };
     } catch (error) {
-        Logger.error(`Error downloading images from file ${fileKey}:`, error);
+        console.error(`Error downloading images from file ${fileKey}:`, error);
         return {
             isError: true,
             content: [{ type: "text" as const, text: `Error downloading images: ${error}` }],

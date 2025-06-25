@@ -1,5 +1,4 @@
 import { VextraService } from "@/data/vextra";
-import { Logger } from "@/utils/logger";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import yaml from "js-yaml";
@@ -34,7 +33,7 @@ const argsSchema = z.object({
 
 const func = async ({ fileKey}: z.infer<typeof argsSchema>, vextraService: VextraService, outputFormat: "yaml" | "json") => {
     try {
-        Logger.log(
+        console.log(
             `Fetching pages info of ${fileKey}`,
         );
 
@@ -42,17 +41,17 @@ const func = async ({ fileKey}: z.infer<typeof argsSchema>, vextraService: Vextr
 
         result = await vextraService.getPageInfos(fileKey);
 
-        Logger.log(`Generating ${outputFormat.toUpperCase()} result from file`);
+        console.log(`Generating ${outputFormat.toUpperCase()} result from file`);
         const formattedResult =
             outputFormat === "json" ? JSON.stringify(result, null, 2) : yaml.dump(result);
 
-        Logger.log("Sending result to client");
+        console.log("Sending result to client");
         return {
             content: [{ type: "text" as const, text: formattedResult }],
         };
     } catch (error) {
         const message = error instanceof Error ? error.message : JSON.stringify(error);
-        Logger.error(`Error fetching file ${fileKey}:`, message);
+        console.error(`Error fetching file ${fileKey}:`, message);
         return {
             isError: true,
             content: [{ type: "text" as const, text: `Error fetching file: ${message}` }],

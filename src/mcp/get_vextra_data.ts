@@ -1,6 +1,5 @@
 import { Shape } from "@/data/simplify/types";
 import { Document } from "@/data/simplify/document";
-import { Logger } from "@/utils/logger";
 import z from "zod"
 import { VextraService } from "@/data/vextra";
 import yaml from "js-yaml";
@@ -54,7 +53,7 @@ const argsSchema = z.object({
 
 const func = async ({ fileKey, pageId, nodeId, depth }: z.infer<typeof argsSchema>, vextraService: VextraService, outputFormat: "yaml" | "json") => {
     try {
-        Logger.log(
+        console.log(
             `Fetching ${depth ? `${depth} layers deep` : "all layers"
             } of ${nodeId ? `node ${nodeId} from file` : `full file`} ${fileKey}`,
         );
@@ -68,19 +67,17 @@ const func = async ({ fileKey, pageId, nodeId, depth }: z.infer<typeof argsSchem
             result = await vextraService.getFile(fileKey, depth);
         }
 
-        // Logger.log(`Successfully fetched file: ${file.name}`);
-
-        Logger.log(`Generating ${outputFormat.toUpperCase()} result from file`);
+        console.log(`Generating ${outputFormat.toUpperCase()} result from file`);
         const formattedResult =
             outputFormat === "json" ? JSON.stringify(result, null, 2) : yaml.dump(result);
 
-        Logger.log("Sending result to client");
+        console.log("Sending result to client");
         return {
             content: [{ type: "text" as const, text: formattedResult }],
         };
     } catch (error) {
         const message = error instanceof Error ? error.message : JSON.stringify(error);
-        Logger.error(`Error fetching file ${fileKey}:`, message);
+        console.error(`Error fetching file ${fileKey}:`, message);
         return {
             isError: true,
             content: [{ type: "text" as const, text: `Error fetching file: ${message}` }],
