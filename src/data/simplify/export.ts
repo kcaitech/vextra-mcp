@@ -8,7 +8,7 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { types } from "@kcdesign/data"
+import { parsePath, types } from "@kcdesign/data"
 import * as resultTypes from "./types"
 export function exportArtboard_guides(source: types.Artboard_guides, depth?: number): resultTypes.Artboard_guides {
     const ret: resultTypes.Artboard_guides = []
@@ -75,10 +75,13 @@ export function exportColorControls(source: types.ColorControls, depth?: number)
 }
 /* color */
 export function exportColor(source: types.Color, depth?: number): resultTypes.Color {
-    const r = Math.round(source.red * 255);
-    const g = Math.round(source.green * 255);
-    const b = Math.round(source.blue * 255);
     const a = Math.round(source.alpha * 100) / 100;
+    if (a === 1) return `#${source.red.toString(16)}${source.green.toString(16)}${source.blue.toString(16)}`
+    if (a === 0) return 'transparent'
+
+    const r = Math.round(source.red);
+    const g = Math.round(source.green);
+    const b = Math.round(source.blue);
     return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 /* contact role type */
@@ -132,7 +135,6 @@ export function exportCurveMode(source: types.CurveMode, depth?: number): result
 /* curve point */
 export function exportCurvePoint(source: types.CurvePoint, depth?: number): resultTypes.CurvePoint {
     const ret: resultTypes.CurvePoint = {} as resultTypes.CurvePoint
-    ret.id = source.id
     ret.x = source.x
     ret.y = source.y
     ret.mode = exportCurveMode(source.mode, depth)
@@ -157,7 +159,7 @@ export function exportEllipse(source: types.Ellipse, depth?: number): resultType
 export function exportFillMask_fills(source: types.FillMask_fills, depth?: number): resultTypes.FillMask_fills {
     const ret: resultTypes.FillMask_fills = []
     source.forEach((source) => {
-        ret.push(exportFill(source, depth))
+        if (source.isEnabled) ret.push(exportFill(source, depth))
     })
     return ret
 }
@@ -204,9 +206,9 @@ export function exportGroupShape_childs(source: types.GroupShape_childs, depth?:
             if (source.typeId === "path-shape") {
                 return exportPathShape(source as types.PathShape, depth)
             }
-            if (source.typeId === "path-shape2") {
-                return exportPathShape2(source as types.PathShape2, depth)
-            }
+            // if (source.typeId === "path-shape2") {
+            //     return exportPathShape2(source as types.PathShape2, depth)
+            // }
             if (source.typeId === "rect-shape") {
                 return exportRectShape(source as types.RectShape, depth)
             }
@@ -368,35 +370,33 @@ export function exportPara_spans(source: types.Para_spans, depth?: number): resu
     })
     return ret
 }
-export function exportPathSegment_points(source: types.PathSegment_points, depth?: number): resultTypes.PathSegment_points {
-    const ret: resultTypes.PathSegment_points = []
-    source.forEach((source) => {
-        ret.push(exportCurvePoint(source, depth))
-    })
-    return ret
-}
+// export function exportPathSegment_points(source: types.PathSegment_points, depth?: number): resultTypes.PathSegment_points {
+//     const ret: resultTypes.PathSegment_points = []
+//     source.forEach((source) => {
+//         ret.push(exportCurvePoint(source, depth))
+//     })
+//     return ret
+// }
 /* path segment */
-export function exportPathSegment(source: types.PathSegment, depth?: number): resultTypes.PathSegment {
-    const ret: resultTypes.PathSegment = {} as resultTypes.PathSegment
-    ret.id = source.id
-    ret.points = exportPathSegment_points(source.points, depth)
-    ret.isClosed = source.isClosed
-    return ret
+export function exportPathSegment(source: types.PathSegment, size: types.ShapeSize, depth?: number): resultTypes.PathSegment {
+    // 将curvePoint转换为svg path
+    const path = parsePath(source.points, source.isClosed, size.width, size.height)
+    return path.toString()
 }
-export function exportPathShape_pathsegs(source: types.PathShape_pathsegs, depth?: number): resultTypes.PathShape_pathsegs {
+export function exportPathShape_pathsegs(source: types.PathShape_pathsegs, size: types.ShapeSize, depth?: number, ): resultTypes.PathShape_pathsegs {
     const ret: resultTypes.PathShape_pathsegs = []
     source.forEach((source) => {
-        ret.push(exportPathSegment(source, depth))
+        ret.push(exportPathSegment(source, size, depth))
     })
     return ret
 }
-export function exportPathShape2_pathsegs(source: types.PathShape2_pathsegs, depth?: number): resultTypes.PathShape2_pathsegs {
-    const ret: resultTypes.PathShape2_pathsegs = []
-    source.forEach((source) => {
-        ret.push(exportPathSegment(source, depth))
-    })
-    return ret
-}
+// export function exportPathShape2_pathsegs(source: types.PathShape2_pathsegs, depth?: number): resultTypes.PathShape2_pathsegs {
+//     const ret: resultTypes.PathShape2_pathsegs = []
+//     source.forEach((source) => {
+//         ret.push(exportPathSegment(source, depth))
+//     })
+//     return ret
+// }
 /* pattern transform */
 export function exportPatternTransform(source: types.PatternTransform, depth?: number): resultTypes.PatternTransform {
     // const ret: resultTypes.PatternTransform = {} as resultTypes.PatternTransform
@@ -611,7 +611,7 @@ export function exportStyleVarType(source: types.StyleVarType, depth?: number): 
 export function exportStyle_fills(source: types.Style_fills, depth?: number): resultTypes.Style_fills {
     const ret: resultTypes.Style_fills = []
     source.forEach((source) => {
-        ret.push(exportFill(source, depth))
+        if (source.isEnabled) ret.push(exportFill(source, depth))
     })
     return ret
 }
@@ -760,7 +760,6 @@ export function exportBlur(source: types.Blur, depth?: number): resultTypes.Blur
 /* border options */
 export function exportBorderOptions(source: types.BorderOptions, depth?: number): resultTypes.BorderOptions {
     const ret: resultTypes.BorderOptions = {} as resultTypes.BorderOptions
-    ret.isEnabled = source.isEnabled
     ret.lineCapStyle = exportLineCapStyle(source.lineCapStyle, depth)
     ret.lineJoinStyle = exportLineJoinStyle(source.lineJoinStyle, depth)
     return ret
@@ -1008,13 +1007,13 @@ export function exportStyleSheet(source: types.StyleSheet, depth?: number): resu
 /* style */
 export function exportStyle(source: types.Style, depth?: number): resultTypes.Style {
     const ret: resultTypes.Style = {} as resultTypes.Style
-    ret.fills = exportStyle_fills(source.fills, depth)
-    ret.shadows = exportStyle_shadows(source.shadows, depth)
+    if (source.fills.length > 0) ret.fills = exportStyle_fills(source.fills, depth)
+    if (source.shadows.length > 0) ret.shadows = exportStyle_shadows(source.shadows, depth)
     ret.borders = exportBorder(source.borders, depth)
     if (source.miterLimit !== undefined) ret.miterLimit = source.miterLimit
     if (source.windingRule !== undefined) ret.windingRule = exportWindingRule(source.windingRule, depth)
     if (source.blur !== undefined) ret.blur = exportBlur(source.blur, depth)
-    if (source.borderOptions !== undefined) ret.borderOptions = exportBorderOptions(source.borderOptions, depth)
+    if (source.borderOptions !== undefined && source.borderOptions.isEnabled) ret.borderOptions = exportBorderOptions(source.borderOptions, depth)
     if (source.colorControls !== undefined) ret.colorControls = exportColorControls(source.colorControls, depth)
     if (source.contextSettings !== undefined) ret.contextSettings = exportContextSettings(source.contextSettings, depth)
     if (source.innerShadows !== undefined) ret.innerShadows = exportStyle_innerShadows(source.innerShadows, depth)
@@ -1088,8 +1087,6 @@ export function exportShape(source: types.Shape, depth?: number): resultTypes.Sh
     ret.style = exportStyle(source.style, depth)
     if (source.boolOp !== undefined) ret.boolOp = exportBoolOp(source.boolOp, depth)
     if (source.isFixedToViewport !== undefined) ret.isFixedToViewport = source.isFixedToViewport
-    if (source.isLocked !== undefined) ret.isLocked = source.isLocked
-    if (source.isVisible !== undefined) ret.isVisible = source.isVisible
     if (source.nameIsFixed !== undefined) ret.nameIsFixed = source.nameIsFixed
     if (source.resizingConstraint !== undefined) ret.resizingConstraint = source.resizingConstraint
     if (source.resizingType !== undefined) ret.resizingType = exportResizeType(source.resizingType, depth)
@@ -1168,18 +1165,18 @@ export function exportComment(source: types.Comment, depth?: number): resultType
 export function exportPathShape(source: types.PathShape, depth?: number): resultTypes.PathShape {
     const ret: resultTypes.PathShape = exportShape(source, depth) as resultTypes.PathShape
     ret.size = exportShapeSize(source.size, depth)
-    ret.pathsegs = exportPathShape_pathsegs(source.pathsegs, depth)
+    ret.pathsegs = exportPathShape_pathsegs(source.pathsegs, source.size, depth)
     if (source.fixedRadius !== undefined) ret.fixedRadius = source.fixedRadius
     return ret
 }
 /* path shape */
-export function exportPathShape2(source: types.PathShape2, depth?: number): resultTypes.PathShape2 {
-    const ret: resultTypes.PathShape2 = exportShape(source, depth) as resultTypes.PathShape2
-    ret.size = exportShapeSize(source.size, depth)
-    ret.pathsegs = exportPathShape2_pathsegs(source.pathsegs, depth)
-    if (source.fixedRadius !== undefined) ret.fixedRadius = source.fixedRadius
-    return ret
-}
+// export function exportPathShape2(source: types.PathShape2, depth?: number): resultTypes.PathShape2 {
+//     const ret: resultTypes.PathShape2 = exportShape(source, depth) as resultTypes.PathShape2
+//     ret.size = exportShapeSize(source.size, depth)
+//     ret.pathsegs = exportPathShape2_pathsegs(source.pathsegs, depth)
+//     if (source.fixedRadius !== undefined) ret.fixedRadius = source.fixedRadius
+//     return ret
+// }
 /* polygon shape */
 export function exportPolygonShape(source: types.PolygonShape, depth?: number): resultTypes.PolygonShape {
     const ret: resultTypes.PolygonShape = exportPathShape(source, depth) as resultTypes.PolygonShape

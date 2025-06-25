@@ -143,7 +143,6 @@ export enum CurveMode {
 }
 /* curve point */
 export type CurvePoint = {
-    id: string,
     x: number,
     y: number,
     mode: CurveMode,
@@ -328,13 +327,9 @@ export enum PaintFilterType {
     Hue = "hue",
 }
 export type Para_spans = Array<Span>
-export type PathSegment_points = Array<CurvePoint>
+
 /* path segment */
-export type PathSegment = {
-    id: string,
-    points: PathSegment_points,
-    isClosed: boolean,
-}
+export type PathSegment = string
 export type PathShape_pathsegs = Array<PathSegment>
 export type PathShape2_pathsegs = Array<PathSegment>
 /* pattern transform */
@@ -708,7 +703,6 @@ export type Blur = {
 }
 /* border options */
 export type BorderOptions = {
-    isEnabled: boolean,
     lineCapStyle: LineCapStyle,
     lineJoinStyle: LineJoinStyle,
 }
@@ -907,8 +901,8 @@ export type StyleSheet = {
 }
 /* style */
 export type Style = {
-    fills: Style_fills,
-    shadows: Style_shadows,
+    fills?: Style_fills,
+    shadows?: Style_shadows,
     borders: Border,
     miterLimit?: number,
     windingRule?: WindingRule,
@@ -942,8 +936,6 @@ export type Shape = {
     style: Style,
     boolOp?: BoolOp,
     isFixedToViewport?: boolean,
-    isLocked?: boolean,
-    isVisible?: boolean,
     nameIsFixed?: boolean,
     resizingConstraint?: number,
     resizingType?: ResizeType,
