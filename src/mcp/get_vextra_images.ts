@@ -101,6 +101,7 @@ const func = async ({ fileKey, nodes, localPath, svgOptions, pngScale }: z.infer
 
         // If any download fails, return false
         const saveSuccess = !downloads.find((success) => !success);
+        console.log("get_vextra_images", downloads);
         return {
             content: [
                 {

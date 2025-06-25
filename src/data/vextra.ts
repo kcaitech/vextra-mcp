@@ -141,6 +141,10 @@ export class VextraService {
         const tempCtx = tempCanvas.getContext('2d');
         tempCtx.translate(-frame.x, -frame.y);
         tempCtx.scale(pngScale, pngScale);
+        const transform = view.transform
+        tempCtx.translate(-transform.translateX, -transform.translateY);
+
+        console.log(node.fileName, " scale", pngScale, " size", width, height);
         view.ctx.setCanvas(tempCtx as any);
 
         view.render('Canvas'); // render to png

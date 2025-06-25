@@ -3,7 +3,7 @@ import { VextraService } from "@/data/vextra";
 
 const fileKey = "file://Users/zhangruiqiang/dev/kcdesign-editor/samples/Ant.Design.home-3.0.sketch"
 const pageId = '1459CE9A-B502-4C72-8EF0-CFDBB4DAA819'
-const nodeId = '1459CE9A-B502-4C72-8EF0-CFDBB4DAA819'
+const nodeId = 'F2ACA917-F944-441E-A984-CAC3D51D95FB'
 // const fileKey = "file://Users/zhangruiqiang/dev/kcdesign-editor/samples/simple.vext"
 // const pageId = "dfbbc3fa-9e6a-4c76-b875-540605cf8782"
 // const nodeId = "92a4307d-9cb7-485c-9630-d1302df10755"
