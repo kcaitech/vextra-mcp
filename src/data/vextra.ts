@@ -124,7 +124,6 @@ export class VextraService {
       if (node.fileType === 'png') {
         // 使用 skia-canvas 库创建 canvas
         const frame = view.frame;
-        console.log("size", frame, pngScale);
         let width = frame.width * pngScale;
         let height = frame.height * pngScale;
 

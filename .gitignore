@@ -5,3 +5,4 @@ logs/
 *.log
 logs/
 .VSCodeCounter
+.DS_Store

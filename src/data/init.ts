@@ -11,6 +11,7 @@
 import { measure } from "./measure";
 import { text2path } from "./text2path";
 import { initModule as initData, Repo, TransactDataGuard, Document } from '@kcdesign/data';
+import { Path2D, Canvas, Image, DOMMatrix } from 'skia-canvas';
 
 function createRepo(data: Document, guard: TransactDataGuard): Repo.IRepository {
     return new Repo.Repo(data, guard);
@@ -32,7 +33,12 @@ let _repoCreator = createRepo;
 export async function initDataModule() {
     if (__inited) return;
 
-    initData(_measure, _text2path)
+    initData(_measure, _text2path, {
+        Path2D: Path2D as any,
+        OffscreenCanvas: Canvas as any,
+        Image: Image as any,
+        DOMMatrix: DOMMatrix as any,
+    })
 
     __inited = true;
 }
