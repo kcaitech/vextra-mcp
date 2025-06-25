@@ -7,7 +7,20 @@ import yaml from "js-yaml";
 const toolName = "get_vextra_pagesinfo";
 
 const description = `
-Used to get page information of Vextra/Figma/Sketch/Moss files, including page ID, page name, and page node count. Special note on node count: when there are too many nodes, you need to pass the depth parameter to control the amount of data retrieved when using get_vextra_data.
+Retrieve page metadata from Vextra/Figma/Sketch/Moss files to understand file structure before detailed data extraction.
+
+**Retrieved Information:**
+- **Page ID**: Unique identifier for each page (required for targeted data retrieval)
+- **Page Name**: Human-readable page titles and labels
+- **Node Count**: Number of design elements/components on each page
+
+**Key Benefits:**
+- **Strategic planning**: Understand file complexity before using get_vextra_data
+- **Performance optimization**: Identify pages with high node counts that may require depth limiting
+- **Navigation aid**: Get page structure overview for efficient data extraction
+
+**Best Practice:**
+Always use this tool first for large or unfamiliar files. When node count is high (>1000), consider using the depth parameter in get_vextra_data to prevent context overflow and ensure successful data retrieval.
 `
 
 const argsSchema = z.object({

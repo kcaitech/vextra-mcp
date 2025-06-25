@@ -15,7 +15,7 @@ function registerTools(
     get_vextra_data.registTools(server, vextraService, outputFormat);
 
     // get_vextra_images
-    get_vextra_images.registTools(server, vextraService);
+    get_vextra_images.registTools(server, vextraService, outputFormat);
 
     // get_vextra_pagesinfo
     get_vextra_pagesinfo.registTools(server, vextraService, outputFormat);

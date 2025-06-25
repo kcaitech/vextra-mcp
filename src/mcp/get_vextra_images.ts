@@ -2,12 +2,23 @@ import { Logger } from "@/utils/logger";
 import { VextraService } from "@/data/vextra";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
+import yaml from "js-yaml";
 
 const toolName = "get_vextra_images";
 
 const description = `
-Get images used in a Vextra/Figma/Sketch/Moss file or render document node to image.
-Use cases include: 1. Get images used in the file; 2. Some document nodes only need to be rendered as images instead of generating layout code; 3. Confirm that the generated code effect is consistent with expectations.
+Retrieve images from Vextra/Figma/Sketch/Moss files or render document nodes as images.
+
+**Primary Functions:**
+1. **Extract embedded images**: Get all images used within the design file
+2. **Render nodes to images**: Convert specific document nodes/components into image format
+3. **Visual verification**: Generate images to verify that code implementation matches design expectations
+
+**Common Use Cases:**
+- Asset extraction: Pull out all images, icons, and graphics from a design file
+- Component visualization: Render complex UI components as images when code generation isn't needed
+- Design-to-code validation: Compare generated code output with original design by rendering both as images
+- Documentation: Create visual references for design components and layouts
 `
 
 const argsSchema = z.object({
@@ -69,7 +80,7 @@ const argsSchema = z.object({
         .describe("Options for SVG export"),
 })
 
-const func = async ({ fileKey, nodes, localPath, svgOptions, pngScale }: z.infer<typeof argsSchema>, vextraService: VextraService) => {
+const func = async ({ fileKey, nodes, localPath, svgOptions, pngScale }: z.infer<typeof argsSchema>, vextraService: VextraService, outputFormat: "yaml" | "json") => {
     try {
         const imageFills = nodes.filter(({ imageRef }) => !!imageRef) as {
             nodeId: string;
@@ -100,15 +111,21 @@ const func = async ({ fileKey, nodes, localPath, svgOptions, pngScale }: z.infer
         ]);
 
         // If any download fails, return false
-        const saveSuccess = !downloads.find((success) => !success);
+        // const saveSuccess = !downloads.find((success) => !success);
         console.log("get_vextra_images", downloads);
+
+        const result = {
+            success_images: downloads.filter((success) => !!success),
+            failed_images: downloads.filter((success) => !success),
+        }
+
+        const formattedResult =
+            outputFormat === "json" ? JSON.stringify(result, null, 2) : yaml.dump(result);
         return {
             content: [
                 {
                     type: "text" as const,
-                    text: saveSuccess
-                        ? `Success, ${downloads.length} images downloaded: ${downloads.join(", ")}`
-                        : "Failed",
+                    text: formattedResult
                 },
             ],
         };
@@ -122,8 +139,8 @@ const func = async ({ fileKey, nodes, localPath, svgOptions, pngScale }: z.infer
 }
 
 
-export function registTools(server: McpServer, vextraService: VextraService) {
+export function registTools(server: McpServer, vextraService: VextraService, outputFormat: "yaml" | "json") {
     server.tool(toolName, description, argsSchema.shape, (args: z.infer<typeof argsSchema>) =>
-        func(args, vextraService)
+        func(args, vextraService, outputFormat)
     );
 }

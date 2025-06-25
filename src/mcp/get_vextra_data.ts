@@ -9,10 +9,20 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 const toolName = "get_vextra_data";
 
 const description = `
-Obtain the layout information about the entire Vextra/Figma/Sketch/Moss file.
-Note that when the file size is large, the retrieved document content may be too much and exceed the model's context length, causing the model to fail to process it.
-In this case, you can consider retrieving shallower level object data by passing the depth parameter to control the depth of the retrieved levels.
-You can use the get_vextra_pagesinfo tool to get file page information, then determine whether to pass the depth parameter based on the page information.
+Retrieve layout information from Vextra/Figma/Sketch/Moss files.
+
+IMPORTANT: For large files, the retrieved content may exceed the model's context length. 
+Use these strategies to manage large documents:
+
+1. **Use depth parameter**: Control traversal depth to get shallower data first
+2. **Check pages first**: Use get_vextra_pagesinfo tool to understand file structure
+3. **Progressive refinement**: For large documents, use a pruning approach:
+   - First, get nodes at depth=3 for a specific page (#pageId)
+   - Identify nodes of interest from the results
+   - Then fetch deeper data for specific nodes (#pageId#nodeId) at depth=3
+   - Repeat as needed to drill down further
+
+This progressive approach prevents context overflow while allowing detailed exploration of specific areas.
 `
 
 const argsSchema = z.object({
