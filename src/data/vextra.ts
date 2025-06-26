@@ -6,6 +6,7 @@ import { Shape } from "./simplify/types";
 import { DocumentLocal } from "./document_local";
 import path from "path";
 import { Canvas } from "skia-canvas";
+import { IO } from "@kcdesign/data";
 
 function saveFile(
   fileName: string,
@@ -120,42 +121,16 @@ export class VextraService {
       const view = await document.getNodeView(node.nodeId, node.pageId);
       if (!view) return;
       if (node.fileType === 'png') {
-        // 使用 skia-canvas 库创建 canvas
-        const frame = view.frame;
-        let width = frame.width * pngScale;
-        let height = frame.height * pngScale;
-
-        if (width <= 0 || height <= 0) return;
-        const max_size = 4096
-        if (width > max_size || height > max_size) {
-          // 等比缩小到4k大小
-          const scale = Math.min(max_size / width, max_size / height);
-          width = Math.floor(width * scale);
-          height = Math.floor(height * scale);
-          pngScale = pngScale * scale;
-        }
-
-        const tempCanvas = new Canvas(width, height);
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.translate(-frame.x, -frame.y);
-        tempCtx.scale(pngScale, pngScale);
-        const transform = view.transform
-        tempCtx.translate(-transform.translateX, -transform.translateY);
-
-        console.log(node.fileName, " scale", pngScale, " size", width, height);
-        view.ctx.setCanvas(tempCtx as any);
-
-        view.render('Canvas'); // render to png
+       const tempCanvas = await IO.exportImg(view, pngScale) as Canvas | undefined
+       if (!tempCanvas) return;
         // 使用 skia-canvas 的 png 属性生成 PNG
         const buffer = await tempCanvas.png;
-
         // 保存为PNG文件
         const path = saveFile(node.fileName, localPath, buffer);
         result.set(node.nodeId, path);
       }
       else if (node.fileType === 'svg') {
-
-        const svg = view.toSVGString();
+        const svg = await IO.exportSvg(view)
         const path = saveFile(node.fileName, localPath, Buffer.from(svg));
         result.set(node.nodeId, path);
       }
