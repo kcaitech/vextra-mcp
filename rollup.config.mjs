@@ -6,14 +6,20 @@ import clear from 'rollup-plugin-clear';
 
 const external = [
     'express',
-    'axios',
-    'qs',
     '@kcdesign/data',
     '@aws-sdk/client-s3',
     'ali-oss',
     'zod',
-    'uuid',
-    '@kcdesign/kcserver-client'
+    '@kcdesign/kcserver-client',
+    'skia-canvas',
+    '@modelcontextprotocol/sdk',
+    '@modelcontextprotocol/sdk/server/sse.js',
+    '@modelcontextprotocol/sdk/server/stdio.js',
+    '@modelcontextprotocol/sdk/server/mcp.js',
+    'js-yaml',
+    'yargs',
+    'fs',
+    'path',
 ];
 
 const commonPlugins = [
