@@ -1007,26 +1007,41 @@ export function exportStyleSheet(source: types.StyleSheet, depth?: number): resu
 /* style */
 export function exportStyle(source: types.Style, depth?: number): resultTypes.Style {
     const ret: resultTypes.Style = {} as resultTypes.Style
-    if (source.fills.length > 0) ret.fills = exportStyle_fills(source.fills, depth)
-    if (source.shadows.length > 0) ret.shadows = exportStyle_shadows(source.shadows, depth)
-    ret.borders = exportBorder(source.borders, depth)
-    if (source.miterLimit !== undefined) ret.miterLimit = source.miterLimit
-    if (source.windingRule !== undefined) ret.windingRule = exportWindingRule(source.windingRule, depth)
+    if (source.fills.length > 0) {
+        const fills = exportStyle_fills(source.fills, depth)
+        if (fills.length > 0) {
+            ret.fills = fills
+        }
+    }
+    if (source.shadows.length > 0) {
+        const shadows = exportStyle_shadows(source.shadows, depth)
+        if (shadows.length > 0) {
+            ret.shadows = shadows
+        }
+    }
+    if (source.borders && source.borders.strokePaints.length > 0) {
+        const borders = exportBorder(source.borders, depth)
+        if (borders.strokePaints.length > 0) { // 非isEnabled的也会过滤掉
+            ret.borders = borders
+        }
+    }
+    // if (source.miterLimit !== undefined) ret.miterLimit = source.miterLimit
+    // if (source.windingRule !== undefined) ret.windingRule = exportWindingRule(source.windingRule, depth)
     if (source.blur !== undefined) ret.blur = exportBlur(source.blur, depth)
     if (source.borderOptions !== undefined && source.borderOptions.isEnabled) ret.borderOptions = exportBorderOptions(source.borderOptions, depth)
     if (source.colorControls !== undefined) ret.colorControls = exportColorControls(source.colorControls, depth)
     if (source.contextSettings !== undefined) ret.contextSettings = exportContextSettings(source.contextSettings, depth)
     if (source.innerShadows !== undefined) ret.innerShadows = exportStyle_innerShadows(source.innerShadows, depth)
-    if (source.contacts !== undefined) ret.contacts = exportStyle_contacts(source.contacts, depth)
-    if (source.startMarkerType !== undefined) ret.startMarkerType = exportMarkerType(source.startMarkerType, depth)
-    if (source.endMarkerType !== undefined) ret.endMarkerType = exportMarkerType(source.endMarkerType, depth)
-    if (source.varbinds !== undefined) ret.varbinds = (() => {
-        const ret: any = {}
-        source.varbinds.forEach((source, k) => {
-            ret[k] = source
-        })
-        return ret
-    })()
+    // if (source.contacts !== undefined) ret.contacts = exportStyle_contacts(source.contacts, depth)
+    // if (source.startMarkerType !== undefined) ret.startMarkerType = exportMarkerType(source.startMarkerType, depth)
+    // if (source.endMarkerType !== undefined) ret.endMarkerType = exportMarkerType(source.endMarkerType, depth)
+    // if (source.varbinds !== undefined) ret.varbinds = (() => {
+    //     const ret: any = {}
+    //     source.varbinds.forEach((source, k) => {
+    //         ret[k] = source
+    //     })
+    //     return ret
+    // })()
     if (source.fillsMask !== undefined) ret.fillsMask = source.fillsMask
     if (source.shadowsMask !== undefined) ret.shadowsMask = source.shadowsMask
     if (source.blursMask !== undefined) ret.blursMask = source.blursMask
@@ -1087,31 +1102,31 @@ export function exportShape(source: types.Shape, depth?: number): resultTypes.Sh
     ret.style = exportStyle(source.style, depth)
     if (source.boolOp !== undefined) ret.boolOp = exportBoolOp(source.boolOp, depth)
     if (source.isFixedToViewport !== undefined) ret.isFixedToViewport = source.isFixedToViewport
-    if (source.nameIsFixed !== undefined) ret.nameIsFixed = source.nameIsFixed
-    if (source.resizingConstraint !== undefined) ret.resizingConstraint = source.resizingConstraint
-    if (source.resizingType !== undefined) ret.resizingType = exportResizeType(source.resizingType, depth)
-    if (source.constrainerProportions !== undefined) ret.constrainerProportions = source.constrainerProportions
-    if (source.clippingMaskMode !== undefined) ret.clippingMaskMode = source.clippingMaskMode
-    if (source.hasClippingMask !== undefined) ret.hasClippingMask = source.hasClippingMask
-    if (source.shouldBreakMaskChain !== undefined) ret.shouldBreakMaskChain = source.shouldBreakMaskChain
-    if (source.varbinds !== undefined) ret.varbinds = (() => {
-        const ret: any = {}
-        source.varbinds.forEach((source, k) => {
-            ret[k] = source
-        })
-        return ret
-    })()
-    if (source.haveEdit !== undefined) ret.haveEdit = source.haveEdit
-    if (source.prototypeStartingPoint !== undefined) ret.prototypeStartingPoint = exportPrototypeStartingPoint(source.prototypeStartingPoint, depth)
-    if (source.prototypeInteractions !== undefined) ret.prototypeInteractions = exportShape_prototypeInteractions(source.prototypeInteractions, depth)
-    if (source.overlayPosition !== undefined) ret.overlayPosition = exportOverlayPosition(source.overlayPosition, depth)
-    if (source.overlayBackgroundInteraction !== undefined) ret.overlayBackgroundInteraction = exportOverlayBackgroundInteraction(source.overlayBackgroundInteraction, depth)
-    if (source.overlayBackgroundAppearance !== undefined) ret.overlayBackgroundAppearance = exportOverlayBackgroundAppearance(source.overlayBackgroundAppearance, depth)
-    if (source.scrollDirection !== undefined) ret.scrollDirection = exportScrollDirection(source.scrollDirection, depth)
-    if (source.scrollBehavior !== undefined) ret.scrollBehavior = exportScrollBehavior(source.scrollBehavior, depth)
-    if (source.mask !== undefined) ret.mask = source.mask
-    if (source.stackPositioning !== undefined) ret.stackPositioning = exportStackPositioning(source.stackPositioning, depth)
-    if (source.radiusMask !== undefined) ret.radiusMask = source.radiusMask
+    // if (source.nameIsFixed !== undefined) ret.nameIsFixed = source.nameIsFixed
+    // if (source.resizingConstraint !== undefined) ret.resizingConstraint = source.resizingConstraint
+    // if (source.resizingType !== undefined) ret.resizingType = exportResizeType(source.resizingType, depth)
+    // if (source.constrainerProportions !== undefined) ret.constrainerProportions = source.constrainerProportions
+    // if (source.clippingMaskMode !== undefined) ret.clippingMaskMode = source.clippingMaskMode
+    // if (source.hasClippingMask !== undefined) ret.hasClippingMask = source.hasClippingMask
+    // if (source.shouldBreakMaskChain !== undefined) ret.shouldBreakMaskChain = source.shouldBreakMaskChain
+    // if (source.varbinds !== undefined) ret.varbinds = (() => {
+    //     const ret: any = {}
+    //     source.varbinds.forEach((source, k) => {
+    //         ret[k] = source
+    //     })
+    //     return ret
+    // })()
+    // if (source.haveEdit !== undefined) ret.haveEdit = source.haveEdit
+    // if (source.prototypeStartingPoint !== undefined) ret.prototypeStartingPoint = exportPrototypeStartingPoint(source.prototypeStartingPoint, depth)
+    // if (source.prototypeInteractions !== undefined) ret.prototypeInteractions = exportShape_prototypeInteractions(source.prototypeInteractions, depth)
+    // if (source.overlayPosition !== undefined) ret.overlayPosition = exportOverlayPosition(source.overlayPosition, depth)
+    // if (source.overlayBackgroundInteraction !== undefined) ret.overlayBackgroundInteraction = exportOverlayBackgroundInteraction(source.overlayBackgroundInteraction, depth)
+    // if (source.overlayBackgroundAppearance !== undefined) ret.overlayBackgroundAppearance = exportOverlayBackgroundAppearance(source.overlayBackgroundAppearance, depth)
+    // if (source.scrollDirection !== undefined) ret.scrollDirection = exportScrollDirection(source.scrollDirection, depth)
+    // if (source.scrollBehavior !== undefined) ret.scrollBehavior = exportScrollBehavior(source.scrollBehavior, depth)
+    // if (source.mask !== undefined) ret.mask = source.mask
+    // if (source.stackPositioning !== undefined) ret.stackPositioning = exportStackPositioning(source.stackPositioning, depth)
+    // if (source.radiusMask !== undefined) ret.radiusMask = source.radiusMask
     return ret
 }
 /* symbol ref shape */
@@ -1263,9 +1278,10 @@ export function exportGroupShape(source: types.GroupShape, depth?: number): resu
             export_childs = false;
         }
     }
-    if (export_childs) {
+    if (export_childs && source.childs.length > 0) {
         ret.childs = exportGroupShape_childs(source.childs, depth)
     }
+    ret.hasChilds = source.childs.length > 0;
     if (source.fixedRadius !== undefined) ret.fixedRadius = source.fixedRadius
     return ret
 }

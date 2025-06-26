@@ -12,7 +12,7 @@ const vextraService = new VextraService(process.env.VESTRA_OAUTH_TOKEN || "");
 
 vextraService.getImages(fileKey, [{
     pageId,
-    nodeId,
+    nodeId: pageId,
     fileName: 'Page1.png',
     fileType: 'png'
 

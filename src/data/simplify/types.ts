@@ -903,7 +903,7 @@ export type StyleSheet = {
 export type Style = {
     fills?: Style_fills,
     shadows?: Style_shadows,
-    borders: Border,
+    borders?: Border,
     miterLimit?: number,
     windingRule?: WindingRule,
     blur?: Blur,
@@ -1049,6 +1049,7 @@ export type Artboard = GroupShape & {
 export type BoolShape = GroupShape
 /* group shape */
 export type GroupShape = Shape & {
+    hasChilds: boolean,
     childs: GroupShape_childs,
     fixedRadius?: number,
 }

@@ -37,7 +37,7 @@ export async function serializeDocument(document: SourceDocument, depth?: number
 
 export async function serializeNode(view: ShapeView, depth?: number): Promise<Shape> {
     const node = adapt2Shape(view);
-    switch (node.typeId) {
+    switch (view.type) {
         case ShapeType.Artboard:
             return exportArtboard(node as Artboard, depth);
         case ShapeType.Group:
