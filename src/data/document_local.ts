@@ -11,8 +11,6 @@
 import { IDocument } from "./document";
 import { openDocument } from "./open";
 import { Document, PageView, DViewCtx, layoutShape, ShapeView, Repo } from "@kcdesign/data";
-import fs from "fs";
-import path from "path";
 import { supportedFormats, SupportedFormatsType } from "./consts";
 
 export class DocumentLocal implements IDocument {
