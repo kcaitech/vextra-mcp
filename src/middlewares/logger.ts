@@ -13,6 +13,6 @@ import { Request, Response, NextFunction } from 'express';
 
 // 基础请求日志记录
 export const Logger = (req: Request, res: Response, next: NextFunction) => {
-  console.info(`${req.method} ${req.url}`);
-  next();
+    next();
+    console.info(`${req.method} ${req.url} ${res.statusCode}`);
 };

@@ -5,10 +5,10 @@ import { VextraService } from "@/data/vextra";
 import yaml from "js-yaml";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-const toolName = "get_vextra_data";
+const toolName = "Get Vextra Data";
 
 const description = `
-Retrieve layout information from Vextra/Figma/Sketch/Moss files.
+Retrieve layout information from Vextra/Figma/Sketch/SVG files.
 
 IMPORTANT: For large files, the retrieved content may exceed the model's context length. 
 Use these strategies to manage large documents:
@@ -29,7 +29,7 @@ const argsSchema = z.object({
         .string()
         .describe(
             `The key of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/...
-        Or the file path of the local file, witch support extension is (.vext, .sketch, .fig, .moss). Local file path use file schema, like file://file/path/to/file.vext...`,
+        Or the file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like file://file/path/to/file.vext...`,
         ),
     pageId: z
         .string()

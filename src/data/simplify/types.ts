@@ -988,13 +988,13 @@ export type Comment = {
 /* path shape */
 export type PathShape = Shape & {
     size: ShapeSize,
-    pathsegs: PathShape_pathsegs,
+    paths: PathShape_pathsegs,
     fixedRadius?: number,
 }
 /* path shape */
 export type PathShape2 = Shape & {
     size: ShapeSize,
-    pathsegs: PathShape2_pathsegs,
+    paths: PathShape2_pathsegs,
     fixedRadius?: number,
 }
 /* polygon shape */

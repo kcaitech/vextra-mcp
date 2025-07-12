@@ -8,12 +8,13 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { IO, TransactDataGuard, Document, DocEditor, creator, Repo } from "@kcdesign/data";
+import { IO, TransactDataGuard, Document, DocEditor, Creator, Repo } from "@kcdesign/data";
 import { getRepoCreator, initDataModule } from "./init";
+import { SupportedFormatsType } from "./consts";
 
 export type DocumentProps = (
     { source: 'storage', storage: IO.IStorage, path: string, fid: string, versionId: string } |
-    { source: 'file', file: File | string, fmt: 'vext' | 'sketch' | 'fig' | 'moss' } |
+    { source: 'file', file: File | string, fmt: SupportedFormatsType } |
     { source: 'new' })
 
 async function _open(props: DocumentProps, repoCreator: (data: Document, guard: TransactDataGuard) => Repo.IRepository) {
@@ -33,12 +34,15 @@ async function _open(props: DocumentProps, repoCreator: (data: Document, guard: 
         } else if (props.fmt === 'fig') {
             data = await IO.importFigma(props.file, repo)
             cooprepo = repoCreator(data, repo)
-        } else if (props.fmt === 'vext' || props.fmt === 'moss') {
+        } else if (props.fmt === 'vext') {
             data = await IO.importVext(props.file, repo);
+            cooprepo = repoCreator(data, repo)
+        } else if (props.fmt === 'svg') {
+            data = await IO.importSvg(props.file, repo);
             cooprepo = repoCreator(data, repo)
         }
     } else if (props.source === 'new') {
-        data = creator.newDocument('New Document', repo);
+        data = Creator.newDocument('New Document', repo);
         cooprepo = repoCreator(data, repo)
         cooprepo.startInitData();
         const editor = new DocEditor(data, cooprepo);

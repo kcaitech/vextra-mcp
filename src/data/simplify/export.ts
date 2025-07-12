@@ -1180,7 +1180,7 @@ export function exportComment(source: types.Comment, depth?: number): resultType
 export function exportPathShape(source: types.PathShape, depth?: number): resultTypes.PathShape {
     const ret: resultTypes.PathShape = exportShape(source, depth) as resultTypes.PathShape
     ret.size = exportShapeSize(source.size, depth)
-    ret.pathsegs = exportPathShape_pathsegs(source.pathsegs, source.size, depth)
+    ret.paths = exportPathShape_pathsegs(source.pathsegs, source.size, depth)
     if (source.fixedRadius !== undefined) ret.fixedRadius = source.fixedRadius
     return ret
 }

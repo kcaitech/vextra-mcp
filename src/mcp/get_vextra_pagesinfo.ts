@@ -3,10 +3,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import yaml from "js-yaml";
 
-const toolName = "get_vextra_pagesinfo";
+const toolName = "Get Vextra Pages Info";
 
 const description = `
-Retrieve page metadata from Vextra/Figma/Sketch/Moss files to understand file structure before detailed data extraction.
+Retrieve page metadata from Vextra/Figma/Sketch/SVG files to understand file structure before detailed data extraction.
 
 **Retrieved Information:**
 - **Page ID**: Unique identifier for each page (required for targeted data retrieval)
@@ -27,7 +27,7 @@ const argsSchema = z.object({
         .string()
         .describe(
             `The key of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/...
-        Or the file path of the local file, witch support extension is (.vext, .sketch, .fig, .moss). Local file path use file schema, like file://file/path/to/file.vext...`,
+        Or the file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like file://file/path/to/file.vext...`,
         ),
 })
 

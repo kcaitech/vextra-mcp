@@ -13,6 +13,7 @@ import { openDocument } from "./open";
 import { Document, PageView, DViewCtx, layoutShape, ShapeView, Repo } from "@kcdesign/data";
 import fs from "fs";
 import path from "path";
+import { supportedFormats, SupportedFormatsType } from "./consts";
 
 export class DocumentLocal implements IDocument {
     private document?: Document;
@@ -25,11 +26,11 @@ export class DocumentLocal implements IDocument {
     }
     public async load() {
         const fmt = this.filePath.split('.').pop();
-        if (!fmt || (fmt !== 'fig' && fmt !== 'sketch' && fmt !== 'vext' && fmt !== 'moss')) {
+        if (!fmt || !supportedFormats.includes(fmt)) {
             throw new Error('文件格式不支持');
         }
         
-        const document = await openDocument({ source: 'file', file: this.filePath, fmt: fmt });
+        const document = await openDocument({ source: 'file', file: this.filePath, fmt: fmt as SupportedFormatsType });
         if (!document) throw new Error('文件打开失败，请稍后再试');
         
         this.document = document.data;

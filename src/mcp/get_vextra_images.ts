@@ -4,10 +4,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
 import yaml from "js-yaml";
 
-const toolName = "get_vextra_images";
+const toolName = "Get Vextra Images";
 
 const description = `
-Retrieve images from Vextra/Figma/Sketch/Moss files or render document nodes as images.
+Retrieve images from Vextra/Figma/Sketch/SVG files or render document nodes as images.
 
 **Primary Functions:**
 1. **Extract embedded images**: Get all images used within the design file
@@ -24,7 +24,7 @@ Retrieve images from Vextra/Figma/Sketch/Moss files or render document nodes as 
 const argsSchema = z.object({
     fileKey: z.string().describe(
         `The key of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/...
-      Or the file path of the local file, witch support extension is (.vext, .sketch, .fig, .moss). Local file path use file schema, like file://file/path/to/file.vext...`,
+      Or the file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like file://file/path/to/file.vext...`,
     ),
     nodes: z
         .object({
