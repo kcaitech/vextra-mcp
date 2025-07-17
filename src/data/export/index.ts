@@ -8,12 +8,6 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { Document, PageView, ShapeView } from "@kcdesign/data";
-
-
-export interface IDocument {
-    load(): Promise<void>;
-    data(): Document;
-    getPageView(pageId: string): Promise<PageView | undefined>
-    getNodeView(nodeId: string, pageId: string): Promise<ShapeView | undefined>
-}
+export * from "./document";
+export * from "./export";
+export * from "./types";

@@ -10,12 +10,11 @@
 
 import { IDocument } from "./document";
 import { openDocument } from "./open";
-import { Document, PageView, DViewCtx, layoutShape, ShapeView, Repo } from "@kcdesign/data";
+import { Document, PageView, DViewCtx, layoutShape, ShapeView } from "@kcaitech/vextra-core";
 import { supportedFormats, SupportedFormatsType } from "./consts";
 
 export class DocumentLocal implements IDocument {
     private document?: Document;
-    private repo?: Repo.IRepository;
     private filePath: string;
     private pageViews: Map<string, {ctx: DViewCtx, view: PageView}> = new Map();
 
@@ -28,20 +27,17 @@ export class DocumentLocal implements IDocument {
             throw new Error('文件格式不支持');
         }
         
-        const document = await openDocument({ source: 'file', file: this.filePath, fmt: fmt as SupportedFormatsType });
+        const document = await openDocument(this.filePath, fmt as SupportedFormatsType);
         if (!document) throw new Error('文件打开失败，请稍后再试');
         
-        this.document = document.data;
-        this.repo = document.cooprepo;
+        this.document = document
     }
     public data() {
-        if (!this.repo) throw new Error('文件未加载');
         if (!this.document) throw new Error('文件未加载');
         return this.document;
     }
 
     public async getPageView(pageId: string): Promise<PageView> {
-        if (!this.repo) throw new Error('文件未加载');
         if (!this.document) throw new Error('文件未加载');
         
         if (this.pageViews.has(pageId)) {
@@ -55,7 +51,6 @@ export class DocumentLocal implements IDocument {
     }
 
     public async getNodeView(nodeId: string, pageId: string): Promise<ShapeView | undefined> {
-        if (!this.repo) throw new Error('文件未加载');
         if (!this.document) throw new Error('文件未加载');
         const pageView = await this.getPageView(pageId);
         if (nodeId === pageId) {

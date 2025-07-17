@@ -10,25 +10,14 @@
 
 import { measure } from "./measure";
 import { text2path } from "./text2path";
-import { initModule as initData, Repo, TransactDataGuard, Document } from '@kcdesign/data';
+import { initModule as initData } from '@kcaitech/vextra-core';
 import { Path2D, Canvas, Image, DOMMatrix } from 'skia-canvas';
 
-function createRepo(data: Document, guard: TransactDataGuard): Repo.IRepository {
-    return new Repo.Repo(data, guard);
-}
 let __inited: boolean = false;
 
 let _measure = measure;
 let _text2path = text2path;
-let _repoCreator = createRepo;
 
-
-// export function initModule(measure?: typeof _measure, text2path?: typeof _text2path, repoCreator?: typeof createRepo) {
-//     // if (!measure || !text2path) throw new Error('measure or text2path is undefined')
-//     if (measure) _measure = measure;
-//     if (text2path) _text2path = text2path;
-//     if (repoCreator) _repoCreator = repoCreator;
-// }
 
 export async function initDataModule() {
     if (__inited) return;
@@ -43,6 +32,3 @@ export async function initDataModule() {
     __inited = true;
 }
 
-export function getRepoCreator() {
-    return _repoCreator;
-}

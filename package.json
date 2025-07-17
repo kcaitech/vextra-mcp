@@ -1,25 +1,23 @@
 {
   "name": "vextra-mcp-server",
   "version": "1.0.0",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/types/index.d.ts",
   "scripts": {
     "start": "node ./dist/server.js",
     "dev": "tsx ./src/server.ts",
-    "build": "rollup --config",
-    "schema": "tsx src/schema/script"
+    "build": "rollup --config"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "vextra",
+    "mcp",
+    "figma",
+    "sketch"
+  ],
+  "author": "kcaitech.com",
+  "license": "AGPL-3.0",
+  "description": "Vextra MCP Server",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.797.0",
-    "@kcdesign/data": "file:../kcdesign-data",
-    "@kcdesign/kcserver-client": "file:../kcserver/client",
+    "@kcaitech/vextra-core": "^1.0.1",
     "@modelcontextprotocol/sdk": "^1.12.1",
-    "ali-oss": "^6.18.1",
     "express": "^5.1.0",
     "js-yaml": "^4.1.0",
     "skia-canvas": "^2.0.2",
@@ -31,7 +29,6 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@types/ali-oss": "^6.16.11",
     "@types/express": "^5.0.1",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.15.2",

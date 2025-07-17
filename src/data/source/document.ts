@@ -8,9 +8,12 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { Document, PageView, ShapeView } from "@kcaitech/vextra-core";
 
-export { IDocument } from './data/document';
-// export { initModule } from './data/init';
-export { DocumentRemote } from './data/document_remote';
-export { DocumentLocal } from './data/document_local';
 
+export interface IDocument {
+    load(): Promise<void>;
+    data(): Document;
+    getPageView(pageId: string): Promise<PageView | undefined>
+    getNodeView(nodeId: string, pageId: string): Promise<ShapeView | undefined>
+}

@@ -8,7 +8,7 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { parsePath, types } from "@kcdesign/data"
+import { parsePath, types } from "@kcaitech/vextra-core"
 import * as resultTypes from "./types"
 export function exportArtboard_guides(source: types.Artboard_guides, depth?: number): resultTypes.Artboard_guides {
     const ret: resultTypes.Artboard_guides = []
@@ -200,15 +200,9 @@ export function exportGroupShape_childs(source: types.GroupShape_childs, depth?:
             if (source.typeId === "group-shape") {
                 return exportGroupShape(source as types.GroupShape, depth)
             }
-            if (source.typeId === "image-shape") {
-                return exportImageShape(source as types.ImageShape, depth)
-            }
             if (source.typeId === "path-shape") {
                 return exportPathShape(source as types.PathShape, depth)
             }
-            // if (source.typeId === "path-shape2") {
-            //     return exportPathShape2(source as types.PathShape2, depth)
-            // }
             if (source.typeId === "rect-shape") {
                 return exportRectShape(source as types.RectShape, depth)
             }
@@ -1231,12 +1225,6 @@ export function exportContactShape(source: types.ContactShape, depth?: number): 
 /* cutout shape */
 export function exportCutoutShape(source: types.CutoutShape, depth?: number): resultTypes.CutoutShape {
     const ret: resultTypes.CutoutShape = exportPathShape(source, depth) as resultTypes.CutoutShape
-    return ret
-}
-/* image shape */
-export function exportImageShape(source: types.ImageShape, depth?: number): resultTypes.ImageShape {
-    const ret: resultTypes.ImageShape = exportPathShape(source, depth) as resultTypes.ImageShape
-    ret.imageRef = source.imageRef
     return ret
 }
 /* line shape */

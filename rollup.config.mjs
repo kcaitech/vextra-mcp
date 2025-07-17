@@ -6,11 +6,8 @@ import clear from 'rollup-plugin-clear';
 
 const external = [
     'express',
-    '@kcdesign/data',
-    '@aws-sdk/client-s3',
-    'ali-oss',
+    '@kcaitech/vextra-core',
     'zod',
-    '@kcdesign/kcserver-client',
     'skia-canvas',
     '@modelcontextprotocol/sdk',
     '@modelcontextprotocol/sdk/server/sse.js',
@@ -23,6 +20,9 @@ const external = [
 ];
 
 const commonPlugins = [
+    clear({
+        targets: ['dist']
+    }),
     json(),
     typescript(),
     babel({ babelHelpers: 'bundled' }),
@@ -30,30 +30,6 @@ const commonPlugins = [
 ];
 
 export default [
-    // npm 包构建配置
-    {
-        input: 'src/index.ts',
-        output: [
-            {
-                dir: 'dist',
-                format: 'es',
-                entryFileNames: '[name].js'
-            },
-            {
-                dir: 'dist',
-                format: 'cjs',
-                entryFileNames: '[name].cjs'
-            }
-        ],
-        plugins: [
-            clear({
-                targets: ['dist']
-            }),
-            ...commonPlugins
-        ],
-        external
-    },
-    // 服务器构建配置
     {
         input: 'src/server.ts',
         output: {

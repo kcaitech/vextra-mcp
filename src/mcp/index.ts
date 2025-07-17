@@ -1,4 +1,14 @@
-import { VextraService } from "@/data/vextra";
+/*
+ * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
+ *
+ * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
+ * The full license text can be found in the LICENSE file in the root directory of this source tree.
+ *
+ * For more information about the AGPL-3.0 license, please visit:
+ * https://www.gnu.org/licenses/agpl-3.0.html
+ */
+
+import { VextraDataService } from "@/data/vextra";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as get_vextra_data from "./get_vextra_data";
 import * as get_vextra_images from "./get_vextra_images";
@@ -6,7 +16,7 @@ import * as get_vextra_pagesinfo from "./get_vextra_pagesinfo";
 
 function registerTools(
     server: McpServer,
-    vextraService: VextraService,
+    vextraService: VextraDataService,
     outputFormat: "yaml" | "json",
   ): void {
 
@@ -31,11 +41,10 @@ function registerTools(
   };
   
   export function createServer(
-    vextraOAuthToken: string,
-    { isHTTP = false, outputFormat = "yaml" }: CreateServerOptions = {},
+    { outputFormat = "yaml" }: CreateServerOptions = {},
   ) {
     const server = new McpServer(serverInfo);
-    const vextraService = new VextraService(vextraOAuthToken);
+    const vextraService = new VextraDataService();
     registerTools(server, vextraService, outputFormat);
   
     return server;

@@ -1,7 +1,17 @@
-import { Shape } from "@/data/simplify/types";
-import { Document } from "@/data/simplify/document";
+/*
+ * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
+ *
+ * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
+ * The full license text can be found in the LICENSE file in the root directory of this source tree.
+ *
+ * For more information about the AGPL-3.0 license, please visit:
+ * https://www.gnu.org/licenses/agpl-3.0.html
+ */
+
+import { Shape } from "@/data/export/types";
+import { Document } from "@/data/export/document";
 import z from "zod"
-import { VextraService } from "@/data/vextra";
+import { VextraDataService } from "@/data/vextra";
 import yaml from "js-yaml";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
@@ -25,23 +35,22 @@ This progressive approach prevents context overflow while allowing detailed expl
 `
 
 const argsSchema = z.object({
-    fileKey: z
+    filePath: z
         .string()
         .describe(
-            `The key of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/...
-        Or the file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like file://file/path/to/file.vext...`,
+            `The file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like /file/path/to/file.vext...`,
         ),
     pageId: z
         .string()
         .optional()
         .describe(
-            "The ID of the page to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/<pageId>/...",
+            "The ID of the page to fetch, often found in a provided URL like vextra.(cn|io)/document/<filePath>/<pageId>/...",
         ),
     nodeId: z
         .string()
         .optional()
         .describe(
-            "The ID of the node to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/<pageId>/<nodeId>/...",
+            "The ID of the node to fetch, often found in a provided URL like vextra.(cn|io)/document/<filePath>/<pageId>/<nodeId>/...",
         ),
     depth: z
         .number()
@@ -51,20 +60,20 @@ const argsSchema = z.object({
         ),
 })
 
-const func = async ({ fileKey, pageId, nodeId, depth }: z.infer<typeof argsSchema>, vextraService: VextraService, outputFormat: "yaml" | "json") => {
+const func = async ({ filePath, pageId, nodeId, depth }: z.infer<typeof argsSchema>, vextraService: VextraDataService, outputFormat: "yaml" | "json") => {
     try {
         console.log(
             `Fetching ${depth ? `${depth} layers deep` : "all layers"
-            } of ${nodeId ? `node ${nodeId} from file` : `full file`} ${fileKey}`,
+            } of ${nodeId ? `node ${nodeId} from file` : `full file`} ${filePath}`,
         );
 
         let result: Document | Shape;
         if (pageId && nodeId) {
-            result = await vextraService.getNode(fileKey, pageId, nodeId, depth);
+            result = await vextraService.getNode(filePath, pageId, nodeId, depth);
         } else if (pageId) {
-            result = await vextraService.getNode(fileKey, pageId, pageId, depth);
+            result = await vextraService.getNode(filePath, pageId, pageId, depth);
         } else {
-            result = await vextraService.getFile(fileKey, depth);
+            result = await vextraService.getFile(filePath, depth);
         }
 
         console.log(`Generating ${outputFormat.toUpperCase()} result from file`);
@@ -77,7 +86,7 @@ const func = async ({ fileKey, pageId, nodeId, depth }: z.infer<typeof argsSchem
         };
     } catch (error) {
         const message = error instanceof Error ? error.message : JSON.stringify(error);
-        console.error(`Error fetching file ${fileKey}:`, message);
+        console.error(`Error fetching file ${filePath}:`, message);
         return {
             isError: true,
             content: [{ type: "text" as const, text: `Error fetching file: ${message}` }],
@@ -85,7 +94,7 @@ const func = async ({ fileKey, pageId, nodeId, depth }: z.infer<typeof argsSchem
     }
 }
 
-export function registTools(server: McpServer, vextraService: VextraService, outputFormat: "yaml" | "json") {
+export function registTools(server: McpServer, vextraService: VextraDataService, outputFormat: "yaml" | "json") {
     server.tool(toolName, description, argsSchema.shape, (args: z.infer<typeof argsSchema>) =>
         func(args, vextraService, outputFormat)
     );

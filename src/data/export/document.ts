@@ -1,11 +1,21 @@
+/*
+ * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
+ *
+ * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
+ * The full license text can be found in the LICENSE file in the root directory of this source tree.
+ *
+ * For more information about the AGPL-3.0 license, please visit:
+ * https://www.gnu.org/licenses/agpl-3.0.html
+ */
+
 import { Artboard, BoolShape, ContactShape, CutoutShape, 
-    GroupShape, ImageShape, LineShape, OvalShape, PathShape, 
+    GroupShape, LineShape, OvalShape, PathShape, 
     PolygonShape, RectShape, ShapeType, StarShape, SymbolRefShape, SymbolShape, 
     SymbolUnionShape, TextShape, Document as SourceDocument, 
-    Page as SourcePage, Shape as SourceShape, ShapeView, adapt2Shape } from "@kcdesign/data";
+    Page as SourcePage, Shape as SourceShape, ShapeView, adapt2Shape } from "@kcaitech/vextra-core";
 import { Page, Shape } from "./types";
 import { exportArtboard, exportPage, exportGroupShape, exportRectShape, 
-    exportBoolShape, exportSymbolShape, exportTextShape, exportImageShape, 
+    exportBoolShape, exportSymbolShape, exportTextShape, 
     exportContactShape, exportShape, exportCutoutShape, exportLineShape, exportOvalShape, 
     exportPathShape, exportPolygonShape, exportStarShape, exportSymbolRefShape, 
     exportSymbolUnionShape } from "./export";
@@ -50,8 +60,6 @@ export async function serializeNode(view: ShapeView, depth?: number): Promise<Sh
             return exportSymbolShape(node as SymbolShape, depth);
         case ShapeType.Text:
             return exportTextShape(node as TextShape, depth);
-        case ShapeType.Image:
-            return exportImageShape(node as ImageShape, depth);
         case ShapeType.Contact:
             return exportContactShape(node as ContactShape, depth);
         case ShapeType.Cutout:

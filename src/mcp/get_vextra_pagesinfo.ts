@@ -1,4 +1,14 @@
-import { VextraService } from "@/data/vextra";
+/*
+ * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
+ *
+ * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
+ * The full license text can be found in the LICENSE file in the root directory of this source tree.
+ *
+ * For more information about the AGPL-3.0 license, please visit:
+ * https://www.gnu.org/licenses/agpl-3.0.html
+ */
+
+import { VextraDataService } from "@/data/vextra";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import yaml from "js-yaml";
@@ -23,23 +33,22 @@ Always use this tool first for large or unfamiliar files. When node count is hig
 `
 
 const argsSchema = z.object({
-    fileKey: z
+    filePath: z
         .string()
         .describe(
-            `The key of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileKey>/...
-        Or the file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like file://file/path/to/file.vext...`,
+            `The file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like /file/path/to/file.vext...`,
         ),
 })
 
-const func = async ({ fileKey}: z.infer<typeof argsSchema>, vextraService: VextraService, outputFormat: "yaml" | "json") => {
+const func = async ({ filePath}: z.infer<typeof argsSchema>, vextraService: VextraDataService, outputFormat: "yaml" | "json") => {
     try {
         console.log(
-            `Fetching pages info of ${fileKey}`,
+            `Fetching pages info of ${filePath}`,
         );
 
         let result: {id: string, name: string, nodeCount: number}[];
 
-        result = await vextraService.getPageInfos(fileKey);
+        result = await vextraService.getPageInfos(filePath);
 
         console.log(`Generating ${outputFormat.toUpperCase()} result from file`);
         const formattedResult =
@@ -51,7 +60,7 @@ const func = async ({ fileKey}: z.infer<typeof argsSchema>, vextraService: Vextr
         };
     } catch (error) {
         const message = error instanceof Error ? error.message : JSON.stringify(error);
-        console.error(`Error fetching file ${fileKey}:`, message);
+        console.error(`Error fetching file ${filePath}:`, message);
         return {
             isError: true,
             content: [{ type: "text" as const, text: `Error fetching file: ${message}` }],
@@ -59,7 +68,7 @@ const func = async ({ fileKey}: z.infer<typeof argsSchema>, vextraService: Vextr
     }
 }
 
-export function registTools(server: McpServer, vextraService: VextraService, outputFormat: "yaml" | "json") {
+export function registTools(server: McpServer, vextraService: VextraDataService, outputFormat: "yaml" | "json") {
     server.tool(toolName, description, argsSchema.shape, (args: z.infer<typeof argsSchema>) =>
         func(args, vextraService, outputFormat)
     );

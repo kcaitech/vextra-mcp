@@ -8,5 +8,6 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-
-export const WS_URL = "ws://localhost:80/api/ws"
+export * from "./document";
+export * from "./document_local";
+export * from "./init";
