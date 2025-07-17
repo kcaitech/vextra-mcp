@@ -103,7 +103,7 @@ Renders design nodes as images.
 Retrieves page structure and metadata from files.
 
 **Parameters:**
-- `filePath` (required): File key or local file path
+- `filePath` (required): Local file path
 
 **Returns:**
 - Page IDs and names
