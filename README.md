@@ -70,7 +70,7 @@ The server starts by default at `http://localhost:8080` and supports the followi
 Retrieves layout information and structure data from design files.
 
 **Parameters:**
-- `filePath` (required): File key or local file path
+- `filePath` (required): Local file path
 - `pageId` (optional): Page ID
 - `nodeId` (optional): Node ID
 - `depth` (optional): Traversal depth limit
@@ -92,7 +92,7 @@ Get specific node
 Renders design nodes as images.
 
 **Parameters:**
-- `filePath` (required): File key or local file path
+- `filePath` (required): Local file path
 - `pageId` (required): Page ID
 - `nodeIds` (required): Array of node IDs
 - `format` (optional): Image format (png, jpg, svg)
