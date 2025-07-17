@@ -1,46 +1,46 @@
 # Vextra MCP Server
 
-一个基于 [Model Context Protocol (MCP)](https://modelcontextprotocol.io) 的服务器，用于处理和解析 Vextra/Figma/Sketch/SVG 设计文件。
+A server based on [Model Context Protocol (MCP)](https://modelcontextprotocol.io) for processing and parsing Vextra/Figma/Sketch/SVG design files.
 
-## 概述
+## Overview
 
-Vextra MCP Server 是一个强大的设计文件处理工具，它通过 MCP 协议为 AI 助手（如 Cursor）提供了访问和操作设计文件的能力。支持多种设计文件格式，包括 Vextra、Figma、Sketch 和 SVG。
+Vextra MCP Server is a powerful design file processing tool that provides AI assistants (like Cursor) with the ability to access and manipulate design files through the MCP protocol. It supports multiple design file formats including Vextra, Figma, Sketch, and SVG.
 
-## 主要功能
+## Key Features
 
-- 🎨 **多格式支持**: 支持 `.vext`、`.sketch`、`.fig`、`.svg` 文件格式
-- 📊 **布局信息提取**: 获取设计文件的详细布局和结构信息
-- 🖼️ **图像渲染**: 将设计节点渲染为图像
-- 📋 **页面信息查询**: 获取文件的页面结构和元数据
-- 🔄 **实时通信**: 支持 SSE (Server-Sent Events) 和 HTTP 通信
-- 🌐 **Cursor 集成**: 与 Cursor AI 助手无缝集成
+- 🎨 **Multi-format Support**: Supports `.vext`, `.sketch`, `.fig`, `.svg` file formats
+- 📊 **Layout Information Extraction**: Retrieves detailed layout and structure information from design files
+- 🖼️ **Image Rendering**: Renders design nodes as images
+- 📋 **Page Information Query**: Retrieves page structure and metadata
+- 🔄 **Real-time Communication**: Supports SSE (Server-Sent Events) and HTTP communication
+- 🌐 **Cursor Integration**: Seamlessly integrates with Cursor AI assistant
 
-## 快速开始
+## Quick Start
 
-### 安装依赖
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 开发模式
+### Development Mode
 
 ```bash
 npm run dev
 ```
 
-### 构建生产版本
+### Build Production Version
 
 ```bash
 npm run build
 npm start
 ```
 
-## 配置
+## Configuration
 
-### 1. 配置 Cursor
+### 1. Configure Cursor
 
-在 Cursor 中添加以下 MCP 配置：
+Add the following MCP configuration in Cursor:
 
 ```json
 {
@@ -56,142 +56,141 @@ npm start
 }
 ```
 
-### 2. 服务器配置
+### 2. Server Configuration
 
-服务器默认在 `http://localhost:8080` 启动，支持以下端点：
+The server starts by default at `http://localhost:8080` and supports the following endpoints:
 
-- `GET /sse` - SSE 连接端点
-- `POST /messages` - HTTP 消息端点
+- `GET /sse` - SSE connection endpoint
+- `POST /messages` - HTTP message endpoint
 
-## API 工具
+## API Tools
 
 ### 1. Get Vextra Data
 
-获取设计文件的布局信息和结构数据。
+Retrieves layout information and structure data from design files.
 
-**参数:**
-- `filePath` (必需): 文件键值或本地文件路径
-- `pageId` (可选): 页面 ID
-- `nodeId` (可选): 节点 ID
-- `depth` (可选): 遍历深度限制
+**Parameters:**
+- `filePath` (required): File key or local file path
+- `pageId` (optional): Page ID
+- `nodeId` (optional): Node ID
+- `depth` (optional): Traversal depth limit
 
-**示例:**
+**Examples:**
 ```
-获取完整文件信息
+Get complete file information
 /path/to/file.sketch
 
-获取特定页面
+Get specific page
 /path/to/file.sketch/pageId
 
-获取特定节点
+Get specific node
 /path/to/file.sketch/pageId/nodeId
 ```
 
 ### 2. Get Vextra Images
 
-将设计节点渲染为图像。
+Renders design nodes as images.
 
-**参数:**
-- `filePath` (必需): 文件键值或本地文件路径
-- `pageId` (必需): 页面 ID
-- `nodeIds` (必需): 节点 ID 数组
-- `format` (可选): 图像格式 (png, jpg, svg)
-- `scale` (可选): 缩放比例
+**Parameters:**
+- `filePath` (required): File key or local file path
+- `pageId` (required): Page ID
+- `nodeIds` (required): Array of node IDs
+- `format` (optional): Image format (png, jpg, svg)
+- `scale` (optional): Scale ratio
 
 ### 3. Get Vextra Pages Info
 
-获取文件的页面结构和元数据。
+Retrieves page structure and metadata from files.
 
-**参数:**
-- `filePath` (必需): 文件键值或本地文件路径
+**Parameters:**
+- `filePath` (required): File key or local file path
 
-**返回信息:**
-- 页面 ID 和名称
-- 节点数量统计
-- 页面结构概览
+**Returns:**
+- Page IDs and names
+- Node count statistics
+- Page structure overview
 
-## 使用示例
+## Usage Examples
 
-### 基本使用
+### Basic Usage
 
-在 Cursor 中，您可以这样使用：
+In Cursor, you can use it like this:
 
 ```
-解析设计文件
+Parse design file
 /path/to/file.sketch
 
-获取特定页面信息
+Get specific page information
 /path/to/file.sketch/pageId
 
-提取页面中的所有图像
-从 /path/to/file.sketch 的第一个页面提取所有图像
+Extract all images from a page
+Extract all images from the first page of /path/to/file.sketch
 ```
 
-### 高级用法
+### Advanced Usage
 
 ```
-分析大文件时限制深度
-获取 /path/to/large-file.sketch 的布局信息，深度限制为 2 层
+Limit depth when analyzing large files
+Get layout information from /path/to/large-file.sketch with depth limit of 2 layers
 
-批量处理
-获取 /path/to/design.fig 中所有页面的缩略图
+Batch processing
+Get thumbnails for all pages in /path/to/design.fig
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 src/
-├── data/           # 数据处理模块
-│   ├── export/     # 数据导出相关
-│   ├── source/     # 数据源处理
-│   └── vextra.ts   # Vextra 服务核心
-├── mcp/            # MCP 工具实现
+├── data/           # Data processing modules
+│   ├── export/     # Data export related
+│   ├── source/     # Data source processing
+│   └── vextra.ts   # Vextra service core
+├── mcp/            # MCP tool implementations
 │   ├── get_vextra_data.ts
 │   ├── get_vextra_images.ts
 │   └── get_vextra_pagesinfo.ts
-├── middlewares/    # 中间件
-└── server.ts       # 服务器入口
+├── middlewares/    # Middlewares
+└── server.ts       # Server entry point
 ```
 
-## 技术栈
+## Tech Stack
 
-- **Node.js** + **TypeScript** - 核心运行环境
-- **Express.js** - Web 服务器框架
-- **@modelcontextprotocol/sdk** - MCP 协议支持
-- **@kcaitech/vextra-core** - Vextra 核心库
-- **skia-canvas** - 图像渲染引擎
-- **Rollup** - 打包工具
+- **Node.js** + **TypeScript** - Core runtime environment
+- **Express.js** - Web server framework
+- **@modelcontextprotocol/sdk** - MCP protocol support
+- **@kcaitech/vextra-core** - Vextra core library
+- **skia-canvas** - Image rendering engine
+- **Rollup** - Build tool
 
-## 开发指南
+## Development Guide
 
-### 环境要求
+### Environment Requirements
 
 - Node.js >= 16.0.0
 - npm >= 8.0.0
 
-### 开发脚本
+### Development Scripts
 
 ```bash
-npm run dev       # 开发模式
-npm run build     # 构建生产版本
-npm start         # 启动生产服务器
+npm run dev       # Development mode
+npm run build     # Build production version
+npm start         # Start production server
 ```
 
-## 许可证
+## License
 
-本项目采用 AGPL-3.0 许可证 - 详情请参阅 [LICENSE](LICENSE.txt) 文件。
+This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE.txt) file for details.
 
-## 作者
+## Author
 
 [KCai Technology](https://kcaitech.com)
 
-## 相关链接
+## Related Links
 
-- [Vextra 官网](https://vextra.cn)
+- [Vextra Official Website](https://vextra.cn)
 - [Model Context Protocol](https://modelcontextprotocol.io)
 - [Cursor AI](https://cursor.sh)
 
 ---
 
-如有问题或建议，请通过 GitHub Issues 联系我们。
-
+If you have any questions or suggestions, please contact us through GitHub Issues. 
