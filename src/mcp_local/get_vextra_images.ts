@@ -1,5 +1,15 @@
+/*
+ * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
+ *
+ * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
+ * The full license text can be found in the LICENSE file in the root directory of this source tree.
+ *
+ * For more information about the AGPL-3.0 license, please visit:
+ * https://www.gnu.org/licenses/agpl-3.0.html
+ */
 
-import { VextraDataService } from "@/data/vextra";
+
+import { VextraDataService } from "@/data/vextra_local";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
 import yaml from "js-yaml";
@@ -22,8 +32,8 @@ Retrieve images from Vextra/Figma/Sketch/SVG files or render document nodes as i
 `
 
 const argsSchema = z.object({
-    fileId: z.string().describe(
-        `The ID of the Vextra file to fetch, often found in a provided URL like vextra.(cn|io)/document/<fileId>/...`,
+    filePath: z.string().describe(
+        `The file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like /file/path/to/file.vext...`,
     ),
     nodes: z
         .object({
@@ -79,14 +89,14 @@ const argsSchema = z.object({
         .describe("Options for SVG export"),
 })
 
-const func = async ({ fileId, nodes, localPath, svgOptions, pngScale }: z.infer<typeof argsSchema>, vextraService: VextraDataService, outputFormat: "yaml" | "json") => {
+const func = async ({ filePath, nodes, localPath, svgOptions, pngScale }: z.infer<typeof argsSchema>, vextraService: VextraDataService, outputFormat: "yaml" | "json") => {
     try {
         const imageFills = nodes.filter(({ imageRef }) => !!imageRef) as {
             nodeId: string;
             imageRef: string;
             fileName: string;
         }[];
-        const fillDownloads = vextraService.getImageFills(fileId, imageFills, localPath);
+        const fillDownloads = vextraService.getImageFills(filePath, imageFills, localPath);
         const renderRequests = nodes
             .filter(({ imageRef }) => !imageRef)
             .map(({ pageId, nodeId, fileName }) => ({
@@ -97,7 +107,7 @@ const func = async ({ fileId, nodes, localPath, svgOptions, pngScale }: z.infer<
             }));
 
         const renderDownloads = vextraService.getImages(
-            fileId,
+            filePath,
             renderRequests,
             localPath,
             pngScale,
@@ -113,7 +123,7 @@ const func = async ({ fileId, nodes, localPath, svgOptions, pngScale }: z.infer<
             success_images: downloads.filter((success) => !!success),
             failed_images: downloads.filter((success) => !success),
         }
-
+        console.log("Sending result to client");
         const formattedResult =
             outputFormat === "json" ? JSON.stringify(result, null, 2) : yaml.dump(result);
         return {
@@ -125,7 +135,7 @@ const func = async ({ fileId, nodes, localPath, svgOptions, pngScale }: z.infer<
             ],
         };
     } catch (error) {
-        console.error(`Error downloading images from file ${fileId}:`, error);
+        console.error(`Error downloading images from file ${filePath}:`, error);
         return {
             isError: true,
             content: [{ type: "text" as const, text: `Error downloading images: ${error}` }],

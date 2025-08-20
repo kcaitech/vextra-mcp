@@ -10,4 +10,5 @@
 
 export * from "./document";
 export * from "./document_local";
+export * from "./document_remote";
 export * from "./init";

@@ -4,6 +4,8 @@
   "scripts": {
     "start": "node ./dist/server.js",
     "dev": "tsx ./src/server.ts",
+    "start:local": "node ./dist/server_local.js",
+    "dev:local": "tsx ./src/server_local.ts",
     "build": "rollup --config"
   },
   "keywords": [
@@ -16,7 +18,9 @@
   "license": "AGPL-3.0",
   "description": "Vextra MCP Server",
   "dependencies": {
-    "@kcaitech/vextra-core": "^1.0.1",
+    "@kcaitech/vextra-coop": "^1.0.0",
+    "@kcaitech/vextra-core": "^1.0.4",
+    "@kcaitech/vextra-server-client": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.12.1",
     "express": "^5.1.0",
     "js-yaml": "^4.1.0",

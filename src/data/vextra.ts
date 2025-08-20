@@ -1,19 +1,15 @@
-/*
- * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
- *
- * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
- * The full license text can be found in the LICENSE file in the root directory of this source tree.
- *
- * For more information about the AGPL-3.0 license, please visit:
- * https://www.gnu.org/licenses/agpl-3.0.html
- */
-
 import fs from "fs";
-import { serializeDocument, Document, serializeNode, Shape } from "./export";
-import { IDocument, DocumentLocal } from "./source";
+import { SimpleVext } from "@kcaitech/vextra-core";
+import { IDocument } from "./source";
+import { DocumentLocal, DocumentRemote } from "./source";
 import path from "path";
 import { Canvas } from "skia-canvas";
 import { IO } from "@kcaitech/vextra-core";
+
+type Document = SimpleVext.Document;
+type Shape = SimpleVext.Shape;
+const serializeNode = SimpleVext.serializeNode;
+const serializeDocument = SimpleVext.serializeDocument;
 
 function saveFile(
     fileName: string,
@@ -56,44 +52,69 @@ type FetchImageFillParams = {
     imageRef: string;
 };
 
-function getFilePath(filePath: string): string {
-    if (filePath.startsWith("file://")) {
-        filePath = filePath.replace("file://", "/");
-        // 去除fileKey前面多余的/，只保留一个/
-        filePath = filePath.replace(/^\/+/, "/");
-    }
-    return filePath;
-}
+const DOCUMENT_TIMEOUT = 1000 * 60 * 15; // 15 minutes
 
 export class VextraDataService {
-    private documentMap = new Map<string, IDocument>();
+    private documentMap = new Map<string, DocumentRemote>();
+    private documentTimestamp = new Map<string, number>();
+    private readonly oauthToken: () => Promise<string>;
+    public readonly startTime: number = Date.now();
+    private documentCleanupInterval: NodeJS.Timeout | null = null;
 
-    async getDocument(filePath: string): Promise<IDocument> {
-        if (this.documentMap.has(filePath)) {
-            return this.documentMap.get(filePath)!;
+    constructor(vextraOAuthToken: () => Promise<string>) {
+        this.oauthToken = vextraOAuthToken;
+        this.documentCleanupInterval = setInterval(() => {
+            Array.from(this.documentTimestamp.entries()).forEach(([fileKey, timestamp]) => {
+                if (Date.now() - timestamp > DOCUMENT_TIMEOUT) {
+                    const document = this.documentMap.get(fileKey);
+                    if (document) document.close('timeout');
+                }
+            });
+        }, DOCUMENT_TIMEOUT);
+    }
+
+    close() {
+        Array.from(this.documentMap.values()).forEach(document => {
+            document.close('Service close');
+        });
+        this.documentMap.clear();
+        this.documentTimestamp.clear();
+        if (this.documentCleanupInterval) {
+            clearInterval(this.documentCleanupInterval);
+            this.documentCleanupInterval = null;
         }
-        let document: IDocument;
+    }
 
-        filePath = getFilePath(filePath);
-        if (!fs.existsSync(filePath)) {
-            throw new Error("File not found");
+    private updateDocumentTimestamp(fileKey: string) {
+        this.documentTimestamp.set(fileKey, Date.now());
+    }
+
+    async getDocument(fileKey: string): Promise<IDocument> {
+        this.updateDocumentTimestamp(fileKey);
+        if (this.documentMap.has(fileKey)) {
+            return this.documentMap.get(fileKey)!;
         }
 
-        document = new DocumentLocal(filePath);
+        const token = await this.oauthToken();
+        const document = new DocumentRemote(token, fileKey, 'client');
+        document.onClose((fileKey) => {
+            this.documentMap.delete(fileKey);
+            this.documentTimestamp.delete(fileKey);
+        });
 
         await document.load();
-        this.documentMap.set(filePath, document);
+        this.documentMap.set(fileKey, document);
         return document;
     }
 
     // 获取节点填充图片
     async getImageFills(
-        filePath: string,
+        fileKey: string,
         nodes: FetchImageFillParams[],
         localPath: string,
     ): Promise<string[]> {
         if (nodes.length === 0) return [];
-        const document = await this.getDocument(filePath);
+        const document = await this.getDocument(fileKey);
         const data = document.data();
         const mediaMgr = data.mediasMgr;
 
@@ -113,7 +134,7 @@ export class VextraDataService {
 
     // 将节点绘制成图片
     async getImages(
-        filePath: string,
+        fileKey: string,
         nodes: FetchImageParams[],
         localPath: string,
         pngScale: number,
@@ -123,7 +144,7 @@ export class VextraDataService {
             simplifyStroke: boolean;
         },
     ): Promise<string[]> {
-        const document = await this.getDocument(filePath);
+        const document = await this.getDocument(fileKey);
 
 
         const result: Map<string, string> = new Map();
@@ -157,9 +178,9 @@ export class VextraDataService {
     }
 
     // 获取整个文件
-    async getFile(filePath: string, depth?: number | null): Promise<Document> {
+    async getFile(fileKey: string, depth?: number | null): Promise<Document> {
         try {
-            const document = await this.getDocument(filePath);
+            const document = await this.getDocument(fileKey);
             if (!document) {
                 throw new Error("Failed to get document");
             }
@@ -173,8 +194,8 @@ export class VextraDataService {
     }
 
     // 获取单个节点
-    async getNode(filePath: string, pageId: string, nodeId: string, depth?: number | null): Promise<Shape> {
-        const document = await this.getDocument(filePath);
+    async getNode(fileKey: string, pageId: string, nodeId: string, depth?: number | null): Promise<Shape> {
+        const document = await this.getDocument(fileKey);
         if (!document) {
             throw new Error("Failed to get document");
         }
@@ -188,8 +209,8 @@ export class VextraDataService {
         return simplifiedResponse;
     }
 
-    async getPageInfos(filePath: string): Promise<{ id: string, name: string, nodeCount: number }[]> {
-        const document = await this.getDocument(filePath);
+    async getPageInfos(fileKey: string): Promise<{ id: string, name: string, nodeCount: number }[]> {
+        const document = await this.getDocument(fileKey);
         const pages = document.data().pagesList.map(page => document.getNodeView(page.id, page.id));
         const pageViews = await Promise.all(pages);
         const pageInfos = pageViews.filter(page => page !== undefined).map(page => {
@@ -200,5 +221,83 @@ export class VextraDataService {
             }
         });
         return pageInfos;
+    }
+
+    // 获取节点填充图片作为blob数据
+    async getImageFillsAsBlob(
+        fileKey: string,
+        nodes: FetchImageFillParams[],
+    ): Promise<{ fileName: string; data: Uint8Array; mimeType: string }[]> {
+        if (nodes.length === 0) return [];
+        const document = await this.getDocument(fileKey);
+        const data = document.data();
+        const mediaMgr = data.mediasMgr;
+
+        const promises = nodes.map(async ({ imageRef, fileName }) => {
+            const image = await mediaMgr.get(imageRef);
+            if (!image) {
+                return null;
+            }
+            // 根据文件扩展名确定MIME类型
+            const ext = path.extname(fileName).toLowerCase();
+            let mimeType = 'application/octet-stream';
+            if (ext === '.png') mimeType = 'image/png';
+            else if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
+            else if (ext === '.svg') mimeType = 'image/svg+xml';
+            else if (ext === '.webp') mimeType = 'image/webp';
+
+            return {
+                fileName,
+                data: image.buff,
+                mimeType,
+            };
+        });
+
+        const results = await Promise.all(promises);
+        return results.filter(result => result !== null) as { fileName: string; data: Uint8Array; mimeType: string }[];
+    }
+
+    // 将节点绘制成图片并返回blob数据
+    async getImagesAsBlob(
+        fileKey: string,
+        nodes: FetchImageParams[],
+        pngScale: number,
+        svgOptions: {
+            outlineText: boolean;
+            includeId: boolean;
+            simplifyStroke: boolean;
+        },
+    ): Promise<{ fileName: string; data: Uint8Array; mimeType: string }[]> {
+        const document = await this.getDocument(fileKey);
+        const result: { fileName: string; data: Uint8Array; mimeType: string }[] = [];
+
+        // 获取所有节点
+        const tasks = nodes.map(async (node) => {
+            const view = await document.getNodeView(node.nodeId, node.pageId);
+            if (!view) return null;
+
+            if (node.fileType === 'png') {
+                const tempCanvas = await IO.exportImg(view, pngScale) as Canvas | undefined;
+                if (!tempCanvas) return null;
+                // 使用 skia-canvas 的 png 属性生成 PNG
+                const buffer = await tempCanvas.png;
+                return {
+                    fileName: node.fileName,
+                    data: buffer,
+                    mimeType: 'image/png',
+                };
+            } else if (node.fileType === 'svg') {
+                const svg = await IO.exportSvg(view);
+                return {
+                    fileName: node.fileName,
+                    data: Buffer.from(svg),
+                    mimeType: 'image/svg+xml',
+                };
+            }
+            return null;
+        });
+
+        const results = await Promise.all(tasks);
+        return results.filter(result => result !== null) as { fileName: string; data: Uint8Array; mimeType: string }[];
     }
 }

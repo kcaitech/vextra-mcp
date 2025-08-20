@@ -8,12 +8,12 @@
  * https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { IO, TransactDataGuard, Document } from "@kcaitech/vextra-core";
+import { IO, TransactDataGuard, Document, Creator, DocEditor, Repo } from "@kcaitech/vextra-core";
 import { initDataModule } from "./init";
 import { SupportedFormatsType } from "./consts";
 
 
-export async function openDocument(file: string, fmt: SupportedFormatsType) {
+export async function openLocalDocument(file: string, fmt: SupportedFormatsType) {
     await initDataModule();
 
     const repo = new TransactDataGuard();
@@ -30,4 +30,57 @@ export async function openDocument(file: string, fmt: SupportedFormatsType) {
     }
 
     return data;
+}
+
+export type DocumentProps = (
+    { source: 'storage', storage: IO.IStorage, path: string, fid: string, versionId: string } |
+    { source: 'file', file: File | string, fmt: SupportedFormatsType } |
+    { source: 'new' })
+
+async function _open(props: DocumentProps, repoCreator: (data: Document, guard: TransactDataGuard) => Repo.IRepository) {
+    await initDataModule();
+
+    const repo = new TransactDataGuard();
+    let cooprepo: Repo.IRepository | undefined;
+    let data: Document | undefined;
+    if (props.source === 'storage') {
+        const { document } = await IO.importRemote(props.storage, props.path, props.fid, props.versionId, repo);
+        data = document
+        cooprepo = repoCreator(data, repo)
+    } else if (props.source === 'file') {
+        if (props.fmt === 'sketch') {
+            data = await IO.importSketch(props.file, repo);
+            cooprepo = repoCreator(data, repo)
+        } else if (props.fmt === 'fig') {
+            data = await IO.importFigma(props.file, repo)
+            cooprepo = repoCreator(data, repo)
+        } else if (props.fmt === 'vext') {
+            data = await IO.importVext(props.file, repo);
+            cooprepo = repoCreator(data, repo)
+        } else if (props.fmt === 'svg') {
+            data = await IO.importSvg(props.file, repo);
+            cooprepo = repoCreator(data, repo)
+        }
+    } else if (props.source === 'new') {
+        data = Creator.newDocument('New Document', repo);
+        cooprepo = repoCreator(data, repo)
+        cooprepo.startInitData();
+        const editor = new DocEditor(data, cooprepo);
+        const page = editor.create('Page 1');
+        editor.insert(0, page);
+        cooprepo.endInitData();
+    }
+
+    if (data) {
+        return { data, cooprepo: cooprepo! }
+    }
+}
+
+/**
+ * 打开文档
+ * @param props @see DocumentProps
+ * @returns 
+ */
+export async function openDocument(props: DocumentProps, repoCreator: (data: Document, guard: TransactDataGuard) => Repo.IRepository) {
+    return await _open(props, repoCreator);
 }

@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
- *
- * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
- * The full license text can be found in the LICENSE file in the root directory of this source tree.
- *
- * For more information about the AGPL-3.0 license, please visit:
- * https://www.gnu.org/licenses/agpl-3.0.html
- */
-
 import { VextraDataService } from "@/data/vextra";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
@@ -15,8 +5,9 @@ import yaml from "js-yaml";
 
 const toolName = "Get Vextra Pages Info";
 
-const description = `
-Retrieve page metadata from Vextra/Figma/Sketch/SVG files to understand file structure before detailed data extraction.
+function getDescription(host: string) {
+    const description = `
+Retrieve page metadata from ${host}'s URL, like ${host}/document/... . It supports Vextra/Figma/Sketch/SVG files.
 
 **Retrieved Information:**
 - **Page ID**: Unique identifier for each page (required for targeted data retrieval)
@@ -31,36 +22,45 @@ Retrieve page metadata from Vextra/Figma/Sketch/SVG files to understand file str
 **Best Practice:**
 Always use this tool first for large or unfamiliar files. When node count is high (>1000), consider using the depth parameter in get_vextra_data to prevent context overflow and ensure successful data retrieval.
 `
+    return description
+}
 
-const argsSchema = z.object({
-    filePath: z
-        .string()
-        .describe(
-            `The file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like /file/path/to/file.vext...`,
-        ),
-})
+type ArgsSchema = z.ZodObject<{
+    fileId: z.ZodString;
+}>
 
-const func = async ({ filePath}: z.infer<typeof argsSchema>, vextraService: VextraDataService, outputFormat: "yaml" | "json") => {
+function getArgsSchema(host: string) {
+
+    const argsSchema = z.object({
+        fileId: z
+            .string()
+            .describe(
+                `The ID of the Vextra file to fetch, often found in a provided URL like ${host}/document/<fileId>/...`,
+            ),
+    })
+    return argsSchema
+}
+
+
+const func = async ({ fileId }: z.infer<ArgsSchema>, vextraService: VextraDataService, outputFormat: "yaml" | "json", sessionId: string) => {
     try {
         console.log(
-            `Fetching pages info of ${filePath}`,
+            `Fetching pages info of ${fileId} for session: ${sessionId}`,
         );
 
-        let result: {id: string, name: string, nodeCount: number}[];
+        let result: { id: string, name: string, nodeCount: number }[];
 
-        result = await vextraService.getPageInfos(filePath);
+        result = await vextraService.getPageInfos(fileId);
 
-        console.log(`Generating ${outputFormat.toUpperCase()} result from file`);
         const formattedResult =
             outputFormat === "json" ? JSON.stringify(result, null, 2) : yaml.dump(result);
 
-        console.log("Sending result to client");
         return {
             content: [{ type: "text" as const, text: formattedResult }],
         };
     } catch (error) {
         const message = error instanceof Error ? error.message : JSON.stringify(error);
-        console.error(`Error fetching file ${filePath}:`, message);
+        console.error(`Error fetching file ${fileId}:`, error);
         return {
             isError: true,
             content: [{ type: "text" as const, text: `Error fetching file: ${message}` }],
@@ -68,8 +68,8 @@ const func = async ({ filePath}: z.infer<typeof argsSchema>, vextraService: Vext
     }
 }
 
-export function registTools(server: McpServer, vextraService: VextraDataService, outputFormat: "yaml" | "json") {
-    server.tool(toolName, description, argsSchema.shape, (args: z.infer<typeof argsSchema>) =>
-        func(args, vextraService, outputFormat)
+export function registTools(server: McpServer, vextraService: VextraDataService, outputFormat: "yaml" | "json", sessionId: string, host: string) {
+    server.tool(toolName, getDescription(host), getArgsSchema(host).shape, (args: z.infer<ArgsSchema>) =>
+        func(args, vextraService, outputFormat, sessionId)
     );
 }

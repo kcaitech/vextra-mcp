@@ -39,5 +39,15 @@ export default [
         },
         plugins: commonPlugins,
         external
+    },
+    {
+        input: 'src/server_local.ts',
+        output: {
+            dir: 'dist',
+            format: 'cjs',
+            entryFileNames: 'server_local.js'
+        },
+        plugins: commonPlugins,
+        external
     }
 ];

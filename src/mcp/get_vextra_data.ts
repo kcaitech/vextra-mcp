@@ -1,24 +1,16 @@
-/*
- * Copyright (c) 2023-2025 KCai Technology (https://kcaitech.com). All rights reserved.
- *
- * This file is part of the Vextra project, which is licensed under the AGPL-3.0 license.
- * The full license text can be found in the LICENSE file in the root directory of this source tree.
- *
- * For more information about the AGPL-3.0 license, please visit:
- * https://www.gnu.org/licenses/agpl-3.0.html
- */
-
-import { Shape } from "@/data/export/types";
-import { Document } from "@/data/export/document";
+import { SimpleVext } from "@kcdesign/data";
 import z from "zod"
 import { VextraDataService } from "@/data/vextra";
 import yaml from "js-yaml";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
+type Document = SimpleVext.Document;
+type Shape = SimpleVext.Shape;
 const toolName = "Get Vextra Data";
 
-const description = `
-Retrieve layout information from Vextra/Figma/Sketch/SVG files.
+function getDescription(host: string) {
+    const description = `
+Retrieve layout information from ${host}'s URL, like ${host}/document/... . It supports Vextra/Figma/Sketch/SVG files.
 
 IMPORTANT: For large files, the retrieved content may exceed the model's context length. 
 Use these strategies to manage large documents:
@@ -33,60 +25,67 @@ Use these strategies to manage large documents:
 
 This progressive approach prevents context overflow while allowing detailed exploration of specific areas.
 `
+    return description
+}
 
-const argsSchema = z.object({
-    filePath: z
-        .string()
-        .describe(
-            `The file path of the local file, witch support extension is (.vext, .sketch, .fig, .svg). Local file path use file schema, like /file/path/to/file.vext...`,
-        ),
-    pageId: z
-        .string()
-        .optional()
-        .describe(
-            "The ID of the page to fetch, often found in a provided URL like vextra.(cn|io)/document/<filePath>/<pageId>/...",
-        ),
-    nodeId: z
-        .string()
-        .optional()
-        .describe(
-            "The ID of the node to fetch, often found in a provided URL like vextra.(cn|io)/document/<filePath>/<pageId>/<nodeId>/...",
-        ),
-    depth: z
-        .number()
-        .optional()
-        .describe(
-            "OPTIONAL. Do NOT use unless explicitly requested by the user. Controls how many levels deep to traverse the node tree,",
-        ),
-})
+type ArgsSchema = z.ZodObject<{
+    fileId: z.ZodString;
+    pageId: z.ZodOptional<z.ZodString>;
+    nodeId: z.ZodOptional<z.ZodString>;
+    depth: z.ZodOptional<z.ZodNumber>;
+}>
 
-const func = async ({ filePath, pageId, nodeId, depth }: z.infer<typeof argsSchema>, vextraService: VextraDataService, outputFormat: "yaml" | "json") => {
+function getArgsSchema(host: string) {
+    const argsSchema = z.object({
+        fileId: z
+            .string()
+            .describe(
+                `The ID of the Vextra file to fetch, often found in a provided URL like ${host}/document/<fileId>/...`,
+            ),
+        pageId: z
+            .string()
+            .optional()
+            .describe(
+                `The ID of the page to fetch, often found in a provided URL like ${host}/document/<fileId>/<pageId>/...`,
+            ),
+        nodeId: z
+            .string()
+            .optional()
+            .describe(
+                `The ID of the node to fetch, often found in a provided URL like ${host}/document/<fileId>/<pageId>/<nodeId>/...`,
+            ),
+        depth: z
+            .number()
+            .optional()
+            .describe(
+                "OPTIONAL. Controls how many levels deep to traverse the node tree,",
+            ),
+    })
+    return argsSchema
+}
+
+const func = async ({ fileId, pageId, nodeId, depth }: z.infer<ArgsSchema>, vextraService: VextraDataService, outputFormat: "yaml" | "json", sessionId: string) => {
     try {
-        console.log(
-            `Fetching ${depth ? `${depth} layers deep` : "all layers"
-            } of ${nodeId ? `node ${nodeId} from file` : `full file`} ${filePath}`,
-        );
+        console.log(`Fetching data of ${fileId}/${pageId}/${nodeId}, depth: ${depth} for session: ${sessionId}`);
 
         let result: Document | Shape;
         if (pageId && nodeId) {
-            result = await vextraService.getNode(filePath, pageId, nodeId, depth);
+            result = await vextraService.getNode(fileId, pageId, nodeId, depth);
         } else if (pageId) {
-            result = await vextraService.getNode(filePath, pageId, pageId, depth);
+            result = await vextraService.getNode(fileId, pageId, pageId, depth);
         } else {
-            result = await vextraService.getFile(filePath, depth);
+            result = await vextraService.getFile(fileId, depth);
         }
 
-        console.log(`Generating ${outputFormat.toUpperCase()} result from file`);
         const formattedResult =
             outputFormat === "json" ? JSON.stringify(result, null, 2) : yaml.dump(result);
 
-        console.log("Sending result to client");
         return {
             content: [{ type: "text" as const, text: formattedResult }],
         };
     } catch (error) {
         const message = error instanceof Error ? error.message : JSON.stringify(error);
-        console.error(`Error fetching file ${filePath}:`, message);
+        console.error(`Error fetching file ${fileId}:`, error);
         return {
             isError: true,
             content: [{ type: "text" as const, text: `Error fetching file: ${message}` }],
@@ -94,8 +93,8 @@ const func = async ({ filePath, pageId, nodeId, depth }: z.infer<typeof argsSche
     }
 }
 
-export function registTools(server: McpServer, vextraService: VextraDataService, outputFormat: "yaml" | "json") {
-    server.tool(toolName, description, argsSchema.shape, (args: z.infer<typeof argsSchema>) =>
-        func(args, vextraService, outputFormat)
+export function registTools(server: McpServer, vextraService: VextraDataService, outputFormat: "yaml" | "json", sessionId: string, host: string) {
+    server.tool(toolName, getDescription(host), getArgsSchema(host).shape, (args: z.infer<ArgsSchema>) =>
+        func(args, vextraService, outputFormat, sessionId)
     );
 }

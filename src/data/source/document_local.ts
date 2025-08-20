@@ -9,7 +9,7 @@
  */
 
 import { IDocument } from "./document";
-import { openDocument } from "./open";
+import { openLocalDocument } from "./open";
 import { Document, PageView, DViewCtx, layoutShape, ShapeView } from "@kcaitech/vextra-core";
 import { supportedFormats, SupportedFormatsType } from "./consts";
 
@@ -27,7 +27,7 @@ export class DocumentLocal implements IDocument {
             throw new Error('文件格式不支持');
         }
         
-        const document = await openDocument(this.filePath, fmt as SupportedFormatsType);
+        const document = await openLocalDocument(this.filePath, fmt as SupportedFormatsType);
         if (!document) throw new Error('文件打开失败，请稍后再试');
         
         this.document = document
