@@ -8,27 +8,26 @@ server:
 
 # Redis集群配置
 redis:
-  addr: 192.168.0.125:6379
+  addr: redis:6379
   password: kcserver
   db: 0
 
 # 认证配置
 auth:
-  addr: "https://test.vextra.cn/api/v1/access/token"
+  addr: "http://vextra/api/v1/access/token"
   expire: 3600
 
 storage:
   provider: minio
-  endpoint: "192.168.0.125:9000"
+  endpoint: "minio:9000"
   region: "zhuhai-1"
-  accessKeyID: "59L3pDWuk9oLQWIgytCI"
-  secretAccessKey: "GmwAzetY1L0jU4pUAqpO7RJGIsG7k3gozVH6whoJ"
+  accessKeyID: "T64JKDV276dJp10"
+  secretAccessKey: "1JzdCtZqgiys22q"
   stsAccessKeyID: "user"
-  stsSecretAccessKey: "GmwAzetY1L0jU4pUAqpO7RJGIsG7k3gozVH6whoJ"
+  stsSecretAccessKey: "LRfETL5HGUGAGv9"
   mcpBucket: "mcp"
 
 storage_public_url:
-  mcp: https://storage.test.vextra.cn/mcp
+  mcp: "http://localhost:9000/mcp"
 
-
-ws_url: "ws://localhost:8081/api/v1/access/ws"
+ws_url: "ws://vextra/api/v1/access/ws"
