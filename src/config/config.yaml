@@ -9,7 +9,7 @@ server:
 # Redis集群配置
 redis:
   addr: redis:6379
-  password: kcserver
+  password: 
   db: 0
 
 # 认证配置
