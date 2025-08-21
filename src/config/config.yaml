@@ -5,6 +5,8 @@ server:
   outputFormat: "yaml"  # yaml | json
   debug: false
   cors: true
+  host: http://localhost
+  at: server # client | server
 
 # Redis集群配置
 redis:

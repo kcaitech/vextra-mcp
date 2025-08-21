@@ -1,10 +1,11 @@
 import fs from "fs";
 import { SimpleVext } from "@kcaitech/vextra-core";
 import { IDocument } from "./source";
-import { DocumentLocal, DocumentRemote } from "./source";
+import { DocumentRemote } from "./source";
 import path from "path";
 import { Canvas } from "skia-canvas";
 import { IO } from "@kcaitech/vextra-core";
+import { getServerConfig } from "@/config";
 
 type Document = SimpleVext.Document;
 type Shape = SimpleVext.Shape;
@@ -96,7 +97,7 @@ export class VextraDataService {
         }
 
         const token = await this.oauthToken();
-        const document = new DocumentRemote(token, fileKey, 'client');
+        const document = new DocumentRemote(token, fileKey, getServerConfig().at);
         document.onClose((fileKey) => {
             this.documentMap.delete(fileKey);
             this.documentTimestamp.delete(fileKey);

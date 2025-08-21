@@ -17,6 +17,7 @@ export interface ServerConfig {
     debug: boolean;
     cors: boolean;
     host: string;
+    at: 'server' | 'client';
 }
 
 export interface RedisConfig {
