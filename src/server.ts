@@ -13,7 +13,7 @@ import {
 import { healthHandler } from "./handlers/health.ts";
 import { messagesHandler, sseHandler } from "./handlers/sse.ts";
 import { readmeHandler } from "./handlers/readme.ts";
-import { initSignStorage, initStorage } from "./services/storage.ts";
+import { initStorage } from "./services/storage.ts";
 import { startScheduledCleanup } from "./services/scheduled-cleanup.ts";
 
 export async function startHttpServer(port: number, webRoot: string): Promise<void> {
@@ -51,7 +51,6 @@ export async function startServer(configPath: string, port: number, webRoot: str
 
     initAuthService(config.auth);
     await initStorage(config.storage)
-    // await initSignStorage(config.storage)
     // 初始化Redis服务
     await initializeRedisService();
     startScheduledCleanup();

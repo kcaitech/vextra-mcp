@@ -1,6 +1,6 @@
-import { SimpleVext } from "@kcdesign/data";
+import { SimpleVext } from "@kcaitech/vextra-core";
 import z from "zod"
-import { VextraDataService } from "@/data/vextra";
+import { VextraDataService } from "../data/vextra";
 import yaml from "js-yaml";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 

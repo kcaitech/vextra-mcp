@@ -1,4 +1,4 @@
-import { IO } from "@kcdesign/data"
+import { IO } from "@kcaitech/vextra-core"
 import OSS from "ali-oss"
 import AWS from "aws-sdk"
 AWS.config.correctClockSkew = true
