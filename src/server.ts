@@ -51,7 +51,7 @@ export async function startServer(configPath: string, port: number, webRoot: str
 
     initAuthService(config.auth);
     await initStorage(config.storage)
-    await initSignStorage(config.storage)
+    // await initSignStorage(config.storage)
     // 初始化Redis服务
     await initializeRedisService();
     startScheduledCleanup();
